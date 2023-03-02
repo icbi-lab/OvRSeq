@@ -8,7 +8,7 @@ You can install the latest version of OvRSeq from GitHub with:
 
 ```
 # install.packages("devtools")
-devtools::install_github("your_username/OvRSeq")
+devtools::install_github("icbi-lab/OvRSeq")
 ```
 
 ### Usage
@@ -23,17 +23,11 @@ data("TCGA_OV")
 qc_results <- qc(TCGA_OV)
 
 # Normalization
-norm_counts <- TPMNorm(TCGA_OV, gene_lengths)
+norm_counts <- log2Norm(RPKMNorm(assay(TCGA_OV)))
 
-# Differential expression analysis
-de_results <- diffExpr(norm_counts, col_data, "TUMOR_STAGE")
+assay(TCGA_OV) <- norm_counts
 
-# Pathway analysis
-pathway_results <- pathwayAnalysis(de_results, "hsa05200")
 
-# Visualization
-heatmap(de_results)
-volcanoPlot(de_results)
 ```
 
 For more detailed information on the functions included in OvRSeq, please see the package documentation.
