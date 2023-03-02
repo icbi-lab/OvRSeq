@@ -15,4 +15,10 @@ Encoding: UTF-8
 LazyData: true
 Depends:
   R (>= 3.5.0)
+  
+Imports:
+  caret,
+  biomaRt,
+  SummarizedExperiment,
+  EnsDb.Hsapiens.v86
 RoxygenNote: 7.2.3
