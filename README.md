@@ -1,6 +1,6 @@
 ## OvRSeq: An Ovarian Cancer RNA-Seq Analysis Package
 
-> :warning: **OvRSeq is still in development**: with great power comes great responsibility!
+> :warning: **OvRSeq is still in development**: May the force be with you!
 
 OvRSeq is an R package for analyzing RNA sequencing data from ovarian cancer patients. The package includes functions for quality control, normalization, differential gene expression analysis, and pathway analysis. OvaRSeq also provides options for visualization of results, such as heatmaps and volcano plots. The package is designed to be user-friendly and applicable to various types of RNA sequencing data.
 
@@ -10,7 +10,7 @@ You can install the latest version of OvRSeq from GitHub with:
 
 ```
 # install.packages("devtools")
-devtools::install_github("your_username/OvRSeq")
+devtools::install_github("icbi-lab/OvRSeq")
 ```
 
 ### Usage
@@ -22,6 +22,7 @@ library(OvRSeq)
 data("TCGA_OV")
 data("brcaness_signature")
 
+<<<<<<< HEAD
 # Classify BRCAness 
 TCGA_OV <- OvRSeq::classify_brcaness(TCGA_OV, rf_model, brcaness_signature)
 
@@ -30,6 +31,16 @@ table(colData(TCGA_OV)$BRCAness)
 
 # BRCAness noBRCAness 
 #      107        119 
+=======
+# Quality control
+qc_results <- qc(TCGA_OV)
+
+# Normalization
+norm_counts <- log2Norm(RPKMNorm(assay(TCGA_OV)))
+
+assay(TCGA_OV) <- norm_counts
+
+>>>>>>> b61cabe8aa4928b25acd895df501edede930e50c
 
 ```
 
