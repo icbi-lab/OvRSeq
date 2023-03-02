@@ -1,0 +1,5 @@
+
+
+NBAMSeq <- function(){
+
+}

@@ -1,0 +1,18 @@
+Package: OvRSeq
+Title: Ovarian Cancer RNA-Seq Analysis Package
+Version: 0.1.0
+Authors@R: c(
+    person("Monfort-Lanzas", "Pablo", 
+        email = "pablo.monfort@i-med.ac.at", role = c("aut", "cre")),
+    person("Gronauer", "Raphael", 
+        email = "raphael.gronauer@i-med.ac.at", role = "aut"))
+Description: OvRSeq is an R package for analyzing RNA sequencing data from ovarian cancer patients. 
+  The package includes functions for quality control, normalization, differential gene expression analysis, 
+  and pathway analysis. OvaRSeq also provides options for visualization of results, such as heatmaps and volcano plots. 
+  The package is designed to be user-friendly and applicable to various types of RNA sequencing data.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Depends:
+  R (>= 3.5.0)
+RoxygenNote: 7.2.3
