@@ -25,10 +25,10 @@ The function returns the best random forest model.
 \examples{
 # Load the TCGA_OV.rda and BRCAness_signature.rda files
 data(TCGA_OV)
-data(BRCAness_signature)
+data("brcaness_signature")
 
 # Train a random forest model using the BRCAness label
-rf_model <- train_rf(TCGA_OV, "BRCAness", rownames(BRCAness_signature))
+rf_model <- train_rf(se, "BRCAness", brcaness_signature)
 
 # Print the model
 print(rf_model)

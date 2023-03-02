@@ -4,7 +4,7 @@
 \alias{classify_brcaness}
 \title{Classify Samples Using BRCAness Classifier}
 \usage{
-classify_brcaness(se, brcaness_classifier = NA, brcaness_signature = NA)
+classify_brcaness(se, brcaness_classifier, brcaness_signature)
 }
 \arguments{
 \item{se}{A SummarizedExperiment object with count data.}

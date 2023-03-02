@@ -13,10 +13,10 @@
 #' @examples
 #' # Load the TCGA_OV.rda and BRCAness_signature.rda files
 #' data(TCGA_OV)
-#' data(BRCAness_signature)
+#' data("brcaness_signature")
 #'
 #' # Train a random forest model using the BRCAness label
-#' rf_model <- train_rf(TCGA_OV, "BRCAness", rownames(BRCAness_signature))
+#' rf_model <- train_rf(se, "BRCAness", brcaness_signature)
 #'
 #' # Print the model
 #' print(rf_model)
@@ -41,7 +41,7 @@ train_rf <- function(se, label,gene_signature){
   count_data_subset <- count_data_subset[, !is.na(sample_label)]
 
   set.seed(42)
-  rf_model <- train(t(count_data_subset), sample_label,method = "rf", metric= "Accuracy")
+  rf_model <- caret::train(t(count_data_subset), sample_label,method = "rf", metric= "Accuracy")
 
   return(rf_model)
 }
@@ -75,17 +75,7 @@ load_brcaness_classifier <- function(){
 #'   gene signature.
 #' @return A SummarizedExperiment with BRCAness predictions, in ColData.
 #' @export
-classify_brcaness <- function(se, brcaness_classifier=NA, brcaness_signature=NA) {
-
-  if (is.na(brcaness_classifier)){
-    print("No BRCAness classifier has been provieded. Using pre-trained RF model")
-    brcaness_classifier <- load_brcaness_classifier()
-  }
-
-  if (is.na(brcaness_signature)){
-    print("No BRCAness classifier has been provieded. Using pre-selected signature")
-    brcaness_signature <- scan("../data/BRCAnessSignature.csv", what = character())
-    }
+classify_brcaness <- function(se, brcaness_classifier, brcaness_signature) {
 
   # Check that all genes in BRCAness signature are present in count data
   if (!all(brcaness_signature %in% rownames(assay(se)))) {
