@@ -31,13 +31,6 @@ table(colData(TCGA_OV)$BRCAness)
 # BRCAness noBRCAness 
 #      107        119 
 =======
-# Quality control
-qc_results <- qc(TCGA_OV)
-
-# Normalization
-norm_counts <- log2Norm(RPKMNorm(assay(TCGA_OV)))
-
-assay(TCGA_OV) <- norm_counts
 
 
 ```
