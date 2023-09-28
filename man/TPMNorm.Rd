@@ -9,7 +9,7 @@ TPMNorm(count_data, gene_length)
 \arguments{
 \item{count_data}{A matrix of count data with genes in rows and samples in columns.}
 
-\item{gene_length}{A data frame with gene IDs as row names and transcript lengths in kilobases (KB) as a column.}
+\item{gene_length}{A vector with gene IDs as names and transcript lengths in kilobases (KB).}
 }
 \value{
 A TPM-normalized matrix with the same dimensions as \code{count_data}.

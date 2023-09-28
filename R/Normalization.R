@@ -39,7 +39,8 @@ getEnsemblIds <- function(gene_symbols, org = "hsapiens_gene_ensembl") {
 #' \code{external_gene_name}, and \code{length}. The length column contains the length of
 #' each gene in base pairs (bp).
 #'
-#' @importFrom ensembldb exonsBy reduce
+#' @importFrom ensembldb exonsBy
+#' @importFrom IRanges reduce
 #' @import EnsDb.Hsapiens.v86
 #' @export
 getGeneLength <- function(ensembl_ids, org = "hsa"){
@@ -63,7 +64,7 @@ getGeneLength <- function(ensembl_ids, org = "hsa"){
 #' Takes a count data matrix and a gene length data frame, and applies TPM normalization.
 #'
 #' @param count_data A matrix of count data with genes in rows and samples in columns.
-#' @param gene_length A data frame with gene IDs as row names and transcript lengths in kilobases (KB) as a column.
+#' @param gene_length A vector with gene IDs as names and transcript lengths in kilobases (KB).
 #'
 #' @return A TPM-normalized matrix with the same dimensions as \code{count_data}.
 #'
@@ -82,7 +83,7 @@ TPMNorm <- function(count_data,gene_length){
   countsTPM <- count_data
 
   # Divide each gene by transcript length
-  countsTPM <- apply( countsTPM, 2, function(x){ x / gene_length$KB } )
+  countsTPM <- apply( countsTPM, 2, function(x){ x / gene_length } )
 
   # Divide by the transcript length
   countsTPM <- apply( countsTPM, 2, function(x) { x / sum(x) * 1E6} )
@@ -138,20 +139,4 @@ log2Norm <- function(count_data){
   return(count_data_log2)
 }
 
-#############
-## Test ####
-############
 
-test <- function(){
-count_data <- read.csv("../data/TCGA-OV_RNASeq_raw.csv", row.names = 1, check.names = F)
-symbols <- rownames(count_data)
-ensembl_ids <- getEnsemblIds(symbols, org = "hsapiens_gene_ensembl")
-
-gene_length <- getGeneLength(ensembl_ids)
-
-lGene <- gene_length$external_gene_name
-count_data <- count_data[lGene,]
-countsTPM <- TPMNorm(count_data, gene_length)
-
-countsLog2TPM <- log2Norm(countsTPM)
-}

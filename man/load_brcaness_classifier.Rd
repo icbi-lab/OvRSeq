@@ -2,16 +2,19 @@
 % Please edit documentation in R/Classification.R
 \name{load_brcaness_classifier}
 \alias{load_brcaness_classifier}
-\title{Load pre-trained BRCAness random forest model}
+\title{Load BRCAness Classifier}
 \usage{
 load_brcaness_classifier()
 }
 \value{
-A trained random forest model object
+The pre-trained BRCAness classifier as a list.
 }
 \description{
-This function loads a pre-trained random forest model for BRCAness classification from a saved .rda file.
+Loads the pre-trained BRCAness classifier from the "brcaness_classifier.rda"
+data file and returns it as the `brcaness_classifier` object.
 }
 \examples{
-brcaness_model <- load_brcaness_classifier()
+# Load the BRCAness classifier
+brcaness_classifier <- load_brcaness_classifier()
+
 }

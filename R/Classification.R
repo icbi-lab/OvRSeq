@@ -41,22 +41,51 @@ train_rf <- function(se, label,gene_signature){
   count_data_subset <- count_data_subset[, !is.na(sample_label)]
 
   set.seed(42)
-  rf_model <- caret::train(t(count_data_subset), sample_label,method = "rf", metric= "Accuracy")
+  rf_model <- train(t(count_data_subset), sample_label,method = "rf", metric= "Accuracy")
 
   return(rf_model)
 }
 
+train_rf_classifier_infiltration_status <- function(se, gene_signature, num_estimators = 300) {
+  set.seed(42)
+  # Extract gene expression matrix and TinfStatus from the SummarizedExperiment
+  X <- t(assay(se))
+  y <- colData(se)$TinfStatus
 
-#' Load pre-trained BRCAness random forest model
+  # Subset the gene expression matrix based on the gene signature
+  X <- X[, gene_signature]
+
+  # Train the Random Forest Classifier
+  rf_model <- train(X, as.factor(y),method = "rf", metric= "Accuracy")
+
+  # Return the trained classifier
+  return(rf_classifier)
+}
+
+
+#' Load BRCAness Classifier
 #'
-#' This function loads a pre-trained random forest model for BRCAness classification from a saved .rda file.
+#' Loads the pre-trained BRCAness classifier from the "brcaness_classifier.rda"
+#' data file and returns it as the `brcaness_classifier` object.
 #'
-#' @return A trained random forest model object
+#' @return
+#' The pre-trained BRCAness classifier as a list.
+#'
+#' @usage
+#' load_brcaness_classifier()
+#'
 #' @examples
-#' brcaness_model <- load_brcaness_classifier()
-load_brcaness_classifier <- function(){
-  load("../data/rf_model.rda")
-  return(rf_model)
+#' # Load the BRCAness classifier
+#' brcaness_classifier <- load_brcaness_classifier()
+#'
+#' @export
+load_brcaness_classifier <- function() {
+  load("brcaness_classifier.rda")
+  if (exists("brcaness_classifier", inherits = FALSE)) {
+    return(brcaness_classifier)
+  } else {
+    stop("brcaness_classifier not found in the loaded data.")
+  }
 }
 
 
