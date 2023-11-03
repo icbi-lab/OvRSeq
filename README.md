@@ -14,39 +14,57 @@ You can install the latest version of OvRSeq from GitHub with:
 # install.packages("devtools")
 devtools::install_github("icbi-lab/OvRSeq")
 ```
+Certainly! Below is an example of how you might rewrite the README.md for the OvRSeq package to include descriptions of the implemented functions:
 
-## Usage
 
-```{r}
-#  Load the OvRSeq package
+## Features and Functions
+
+OvRSeq includes the following key functions:
+
+- `avg_expression_for_signature_se`: Computes average gene expression values and enriches `colData` in `SummarizedExperiment` objects.
+
+- `brcaness_classifier`: Contains a trained Random Forest model for predicting BRCAness based on a 24-gene expression signature derived from the TCGA-OV dataset.
+
+- `calculateIPS`: Calculates the Immunophenoscore (IPS) and its component scores from a `SummarizedExperiment` object.
+
+- `classify_brcaness`: Uses the BRCAness classifier to categorize samples based on their likelihood of BRCAness.
+
+- `deconvolute_immune`: Deconvolutes immune cell fractions from gene expression data using the `immunedeconv` package.
+
+- `get_consensus_ov_subtypes`: Implements a consensus classifier to determine molecular subtypes of high-grade serous ovarian cancer.
+
+- `immune_signature_score`: Calculates enrichment scores for various immune signatures using the gene set variation analysis (GSVA) method.
+
+- `load_TCGA_OV`: Provides an interface to load the TCGA-OV dataset as a `SummarizedExperiment` object.
+
+- `ssGSEA_OV_custom`: Performs single-sample Gene Set Enrichment Analysis (ssGSEA) using custom gene sets and the `GSVA` package.
+
+- `tumor_immune_phenotype_signature`: A gene signature for classifying tumor immune phenotypes in ovarian cancer based on the spatial distribution of CD8+ T cells.
+
+## Example Usage
+
+Here's how to calculate the average expression for a signature and enrich `colData`:
+
+```r
 library(OvRSeq)
-
-# Load example data
-data("TCGA_OV")
-data("brcaness_signature")
-
-# Classify BRCAness 
-TCGA_OV <- OvRSeq::classify_brcaness(TCGA_OV, rf_model, brcaness_signature)
-
-# Check results
-table(colData(TCGA_OV)$BRCAness)
-
-# BRCAness noBRCAness 
-#      107        119 
-=======
-
-# Obtain immune signature score
-## Load the geneset
-data("immune_signatures")
-TCGA_OV <- immune_signature_score(TCGA_OV, immune_signatures)
+# Assuming 'se' is a SummarizedExperiment object
+se <- avg_expression_for_signature_se(se)
 ```
 
-For more detailed information on the functions included in OvRSeq, please see the package documentation.
+To classify samples for BRCAness:
 
-## Contributing
+```r
+brcaness_status <- classify_brcaness(se)
+```
 
-Contributions to `OvRSeq` are welcome. If you find any bugs, have feature requests, or want to contribute improvements or new features, please open an issue or submit a pull request on GitHub.
+For a full list of functions and their descriptions, consult the package documentation.
+
+## Development and Contributions
+
+OvRSeq is under active development. We welcome contributions and suggestions from the community. Please feel free to submit issues and pull requests through our [GitHub repository](https://github.com/icbi-lab/OvRSeq).
 
 ## License
 
-This package is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+OvRSeq is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+

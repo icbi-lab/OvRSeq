@@ -178,3 +178,41 @@ NULL
 #' @name tumor_immune_phenotype_signature
 NULL
 
+#' Immunophenoscore (IPS) Genes and Weights
+#'
+#' A dataset containing genes and corresponding weights used to calculate the
+#' Immunophenoscore (IPS), which is a measure of the immune landscape of a tumor.
+#'
+#' @format
+#' A data frame with the following columns:
+#' \describe{
+#'   \item{GENE}{(character) Official gene symbol.}
+#'   \item{WEIGHT}{(numeric) Weight of the gene in the IPS calculation.}
+#'   \item{CATEGORY}{(character) The immunological category to which the gene belongs
+#'   (e.g., MHC, CP, EC, SC, MDSC, TREG, AZ).}
+#' }
+#'
+#' @source
+#' Immunophenogram project: https://github.com/icbi-lab/Immunophenogram
+#'
+#' @references
+#' \itemize{
+#'   \item{Charoentong P, Finotello F, Angelova M, et al. Pan-cancer Immunophenogram.
+#'   \item{The original publication of the IPS method and its application can be referenced here,
+#'   if applicable.}
+#' }
+#'
+#' @usage
+#' data(IPS_genes)
+#'
+#' @examples
+#' # Load the IPS genes and weights
+#' data(IPS_genes)
+#'
+#' # Access the gene symbols and weights
+#' ips_genes <- IPS_genes$GENE
+#' ips_weights <- IPS_genes$WEIGHT
+#'
+#' @docType data
+#' @name IPS_genes
+NULL

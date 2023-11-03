@@ -18,7 +18,7 @@
 #'
 #' @export
 load_brcaness_signature <- function() {
-  load("brcaness_signature.rda")
+  load("data/brcaness_signature.rda")
   if (exists("brcaness_signature", inherits = FALSE)) {
     return(brcaness_signature)
   } else {
@@ -50,7 +50,7 @@ load_brcaness_signature <- function() {
 #'
 #' @export
 load_immune_signatures <- function() {
-  load("immune_signatures.rda")
+  load("data/immune_signatures.rda")
   if (exists("immune_signatures", inherits = FALSE)) {
     return(immune_signatures)
   } else {
