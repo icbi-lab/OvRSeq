@@ -4,23 +4,21 @@
 \alias{avg_expression_for_signature_se}
 \title{Compute average expression values for gene signatures and enrich colData of a SummarizedExperiment object}
 \usage{
-avg_expression_for_signature_se(se, gene_sig, genesetname)
+avg_expression_for_signature_se(se, gmt)
 }
 \arguments{
 \item{se}{A `SummarizedExperiment` object with gene expression data.}
 
 \item{gene_sig}{A matrix or data frame where each column represents a gene signature and each cell contains a gene symbol.
 Empty cells should be represented as empty strings.}
-
-\item{genesetname}{A character string that serves as a prefix for the new columns added to the `colData` of the `SummarizedExperiment` object.}
 }
 \value{
-A `SummarizedExperiment` object enriched with new columns in `colData`, each representing 
+A `SummarizedExperiment` object enriched with new columns in `colData`, each representing
         the average expression value of a given gene signature for each sample.
 }
 \description{
-Given a `SummarizedExperiment` object and a matrix or data frame of gene signatures, 
-this function computes the average expression values for each gene signature and enriches 
+Given a `SummarizedExperiment` object and a matrix or data frame of gene signatures,
+this function computes the average expression values for each gene signature and enriches
 the `colData` of the `SummarizedExperiment` object with the computed values.
 }
 \examples{

@@ -39,7 +39,7 @@ test_data <- function(){
 
 
 icon7_dataset <- function(){
-  all_data <- read.csv("../Scripts/TIF_classification/Icon7_log2TPM_for_classifierTraining.csv")
+  all_data <- read.csv("../../../data/projects/2020/OvarianCancerHH/OV_R_package/Scripts/TIF_classification/Icon7_log2TPM_for_classifierTraining.csv")
   metada_sample <- all_data[c("X","TinfStatus")]
   colnames(metada_sample) <- c("Sample","TinfStatus")
   count_data <- all_data[3:27060]
@@ -48,5 +48,7 @@ icon7_dataset <- function(){
   rownames(count_data) <- metada_sample$Sample
   ICON7 <- SummarizedExperiment(assays=list(counts=as.matrix(t(count_data))),
                                   colData=as.data.frame(metada_sample))
+  return(ICON7)
 
 }
+

@@ -81,5 +81,10 @@ calculateIPS <- function(se) {
 
   # Save the results
   colData(se) <- cbind(colData(se), scores)
+
+  # Check for NAs in IPS and calculate how many scores were computed
+  num_calculated_ips <- sum(!is.na(scores$IPS))
+  # Display a completion message with the count of non-NA IPS scores
+  cat("IPS calculation complete: ", num_calculated_ips, "scores were calculated.\n")
   return(se)
 }

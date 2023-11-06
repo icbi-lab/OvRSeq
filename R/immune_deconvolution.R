@@ -12,7 +12,7 @@
 #' @export
 #' @details
 #' Available methods and their respective licensing and citations are as follows:
-#' 
+#'
 #' \tabular{lll}{
 #' method \tab license \tab citation \cr
 #' quanTIseq \tab free (BSD) \tab Finotello et al. (2019) Genome Medicine \cr
@@ -22,25 +22,27 @@
 #' xCell \tab free (GPL 3.0) \tab Aran et al. (2017) Genome Biology \cr
 #' EPIC \tab free for non-commercial use only \tab Racle et al. (2017) ELife \cr
 #' }
-#' 
+#'
 #' Note: While `immunedeconv` itself is free (BSD), you may need to obtain a license to use individual methods.
 #' Please ensure you cite both this package and the method(s) you use in your work.
 #'
 #' @references
 #' Sturm, G., et al. (2019) Bioinformatics. \url{https://doi.org/10.1093/bioinformatics/btz363}
-#' 
+#'
 deconvolute_immune <- function(se, method) {
-  indications <- rep('OV', times=ncol(data))
+  indications <- rep('OV', times=ncol(se))
   data <- assay(se)
   if (method == "timer") {
     res <- deconvolute(data, method=method, indications=indications)
   } else {
     res <- deconvolute(data, method=method)
   }
-   lCell <- unlist(lapply(res$cell_type,function(x){paste0(x,"|", method)}))
-   res$cell_type <- NULL
-   res <- t(res)
-   colnames(res) <- lCell
-   colData(se) <- cbind(colData(se), res)
-   return(se)
+  message <- paste("Deconvolute", method, "computed successfully.")
+  cat(message, "\n")
+  lCell <- unlist(lapply(res$cell_type,function(x){paste0(x,"|", method)}))
+  res$cell_type <- NULL
+  res <- t(res)
+  colnames(res) <- lCell
+  colData(se) <- cbind(colData(se), res)
+  return(se)
 }

@@ -16,10 +16,16 @@
 #' @export
 immune_signature_score <- function(se, method = "ssgsea", genelist ){
   count_data <- assay(se)
-  results <- GSVA::gsva(count_data,
+  results <- gsva(count_data,
                  genelist,
                  method = 'ssgsea',
                  ssgsea.norm=FALSE)
+  # Create a success message
+  success_message <- "Enrichment scores for immune signatures computed successfully."
+
+  # Print the success message
+  cat(success_message, "\n") # Using 'cat' to print the message followed by a newline character
+
   results <- t(results)
   colData(se) <- cbind(colData(se), results)
   return(se)
@@ -27,56 +33,46 @@ immune_signature_score <- function(se, method = "ssgsea", genelist ){
 
 #' Compute average expression values for gene signatures and enrich colData of a SummarizedExperiment object
 #'
-#' Given a `SummarizedExperiment` object and a matrix or data frame of gene signatures, 
-#' this function computes the average expression values for each gene signature and enriches 
+#' Given a `SummarizedExperiment` object and a matrix or data frame of gene signatures,
+#' this function computes the average expression values for each gene signature and enriches
 #' the `colData` of the `SummarizedExperiment` object with the computed values.
 #'
 #' @param se A `SummarizedExperiment` object with gene expression data.
 #' @param gene_sig A matrix or data frame where each column represents a gene signature and each cell contains a gene symbol.
-#'        Empty cells should be represented as empty strings. 
-#' @param genesetname A character string that serves as a prefix for the new columns added to the `colData` of the `SummarizedExperiment` object.
-#' 
-#' @return A `SummarizedExperiment` object enriched with new columns in `colData`, each representing 
+#'        Empty cells should be represented as empty strings.
+#'
+#' @return A `SummarizedExperiment` object enriched with new columns in `colData`, each representing
 #'         the average expression value of a given gene signature for each sample.
-#' 
+#'
 #' @examples
 #' # Assuming 'se' is a SummarizedExperiment object and 'gene_sig' is your gene signatures matrix
 #' enriched_se <- avg_expression_for_signature_se(se, gene_sig, "MyGeneSet")
 #'
 #' @export
-avg_expression_for_signature_se <- function(se, gene_sig, genesetname) {
-  
-  # Check if the genesetname is already present in colData, if so provide a warning
-  if (genesetname %in% colnames(colData(se))) {
-    warning("The genesetname is already present in colData. Results will overwrite existing values.")
-  }
-  
-  # Extract signatures from gene_sig
-  sigs <- colnames(gene_sig)
-  
-  # Extract expression data from the SummarizedExperiment object
-  expression <- assay(se)
-  
-  # For each signature, compute average expression
-  for (i in seq_along(sigs)) {
-    genlist <- gene_sig[, i]
-    
-    # Filter out empty entries
-    genlist <- genlist[genlist != ""]
-    
-    # Match rownames from se with genlist to handle any missing genes
-    matched_genes <- rownames(se)[rownames(se) %in% genlist]
-    
+avg_expression_for_signature_se <- function(se, gmt) {
+
+  # For each signature in the small_immune_signature list, compute average expression
+  for (signature_name in names(gmt)) {
+    gene_list <- gmt[[signature_name]]
+
+    # Filter out empty entries if any exist
+    gene_list <- gene_list[gene_list != ""]
+
+    # Match rownames from se with gene_list to handle any missing genes
+    matched_genes <- rownames(se)[rownames(se) %in% gene_list]
+
     # Get expression values for genes in the signature
-    expression_genes <- expression[matched_genes, , drop = FALSE]
-    
+    expression_genes <- assay(se)[matched_genes, , drop = FALSE]
+
     # Compute average expression across genes for each sample
-    av_expression <- colMeans(expression_genes, na.rm = TRUE)
-    
+    avg_expression <- colMeans(expression_genes, na.rm = TRUE)
+
     # Add this to colData of the SummarizedExperiment
-    colData(se)[[paste0(genesetname, "_", sigs[i])]] <- av_expression
+    colData(se)[[signature_name]] <- avg_expression
   }
-  
+  cat("The immune signatures have been successfully computed and added to the dataset.\n")
+
   return(se)
 }
+
 

@@ -33,5 +33,8 @@ ips_weights <- IPS_genes$WEIGHT
 
 }
 \references{
-
+Charoentong P, Finotello F, Angelova M, Mayer C, Efremova M, Rieder D, Hackl H,
+Trajanoski Z. Pan-cancer Immunogenomic Analyses Reveal Genotype-Immunophenotype
+Relationships and Predictors of Response to Checkpoint Blockade. Cell Rep.
+2017 Jan 3;18(1):248-262. doi: 10.1016/j.celrep.2016.12.019. PMID: 28052254.
 }

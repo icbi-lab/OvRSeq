@@ -144,6 +144,53 @@ NULL
 #' @name immune_signatures
 NULL
 
+#' Small Immune Signatures
+#'
+#' A GMT (Gene Matrix Transposed) file containing concise immune-related
+#' gene signatures. Each signature is limited to fewer than 10 genes, which
+#' is why they are termed "small." These limited gene sets can provide more
+#' precise z-score calculations for immune-related processes as opposed to
+#' single-sample gene set enrichment variances.
+#'
+#' Each signature within the file facilitates the characterization of
+#' specific immune-related activities, such as T cell inflammation, interferon-gamma
+#' response, cytolytic activity, cytotoxic T lymphocyte response, and various
+#' components of the immune system. Splitting larger signatures into smaller,
+#' more manageable sets can yield a clearer understanding of the biological
+#' data by focusing on the most relevant and influential genes.
+#'
+#' @format
+#' A list of lists, where each sublist contains:
+#'   - `Name`: The name of the immune signature.
+#'   - `Genes`: A character vector of gene symbols, each representing fewer than
+#'     10 signature genes for focused analysis.
+#'
+#' @description
+#' The `small_immune_signatures` object contains well-curated, small immune-related
+#' gene signatures in GMT format, suitable for refined gene expression analysis.
+#' These small signatures are derived from larger gene sets, trimmed for optimal
+#' focus and precision in immune process characterization.
+#'
+#' @seealso
+#' For more detailed information on the use of small gene sets for z-score calculations
+#' in immune signature analysis, as well as general GMT file structure and gene set
+#' enrichment analysis (GSEA), refer to the relevant literature and software documentation.
+#'
+#' @usage data(small_immune_signatures)
+#'
+#' @examples
+#' # Load the small immune signatures
+#' data(small_immune_signatures)
+#'
+#' # Access the genes in the "T cell inflammation" signature
+#' t_cell_inflammation_genes <- small_immune_signatures$T_cell_inflammation$Genes
+#'
+#' @docType data
+#' @name small_immune_signatures
+#' @keywords datasets
+NULL
+
+
 #' Tumor Immune Phenotype Signature
 #'
 #' A gene signature developed based on digital pathology and transcriptome analysis
@@ -178,6 +225,47 @@ NULL
 #' @name tumor_immune_phenotype_signature
 NULL
 
+#' Tumor Infiltration Status Classifier
+#'
+#' A Random Forest classifier trained on gene expression data from the ICON7 trial.
+#' This classifier is designed to classify the tumor immune infiltration status
+#' into categories such as 'infiltrated', 'excluded', or 'desert' based on a
+#' gene signature. The model is trained using `randomForest` package and can be
+#' used to predict the infiltration status of ovarian cancer samples.
+#'
+#' @format An object of class `randomForest` (inherits from `list`), representing
+#'   a fitted Random Forest model.
+#'
+#' @details
+#' The classifier was trained using a Random Forest algorithm with 300 trees
+#' on the ICON7 dataset, which contains gene expression data for ovarian cancer
+#' samples. The gene signature used for the training consists of genes identified
+#' as common between the SummarizedExperiment datasets and the tumor immune phenotype
+#' signature.
+#'
+#' The `classifier_infiltration_status` is saved as an R object of class `randomForest`,
+#' which contains the entire fitted model object. This model can be used to predict
+#' infiltration status in other datasets by supplying the appropriate gene expression
+#' data for the genes included in the signature.
+#'
+#' The classifier should be applied only to data that has been preprocessed in the same
+#' manner as the ICON7 trial data to ensure the validity of the predictions.
+#'
+#' @usage
+#' data(classifier_infiltration_status)
+#'
+#' @references
+#' Desbois M, Udyavar AR, Ryner L, Kozlowski C, Guan Y, Dürrbaum M, et al. Integrated digital
+#' pathology and transcriptome analysis identifies molecular mediators of T-cell exclusion in
+#' ovarian cancer. Nat Commun. 2020;11:5583.
+#'
+#' @examples
+#' data(classifier_infiltration_status)
+#' # Suppose `new_data` is a matrix of gene expression values with rows as genes and columns as samples:
+#' predicted_status <- predict(classifier_infiltration_status, new_data)
+#' @name classifier_infiltration_status
+NULL
+
 #' Immunophenoscore (IPS) Genes and Weights
 #'
 #' A dataset containing genes and corresponding weights used to calculate the
@@ -196,11 +284,10 @@ NULL
 #' Immunophenogram project: https://github.com/icbi-lab/Immunophenogram
 #'
 #' @references
-#' \itemize{
-#'   \item{Charoentong P, Finotello F, Angelova M, et al. Pan-cancer Immunophenogram.
-#'   \item{The original publication of the IPS method and its application can be referenced here,
-#'   if applicable.}
-#' }
+#' Charoentong P, Finotello F, Angelova M, Mayer C, Efremova M, Rieder D, Hackl H,
+#' Trajanoski Z. Pan-cancer Immunogenomic Analyses Reveal Genotype-Immunophenotype
+#' Relationships and Predictors of Response to Checkpoint Blockade. Cell Rep.
+#' 2017 Jan 3;18(1):248-262. doi: 10.1016/j.celrep.2016.12.019. PMID: 28052254.
 #'
 #' @usage
 #' data(IPS_genes)

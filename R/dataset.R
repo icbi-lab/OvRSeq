@@ -20,7 +20,7 @@
 #'
 #' @export
 load_TCGA_OV <- function() {
-  load("TCGA_OV.rda")
+  load("data/TCGA_OV.rda")
   if (exists("TCGA_OV", inherits = FALSE)) {
     return(TCGA_OV)
   } else {
