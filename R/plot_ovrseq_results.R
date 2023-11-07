@@ -9,7 +9,7 @@
 #' @param y_var The name of the variable in colData(se) to use for the y-axis.
 #' @param color_var The name of the variable in colData(se) to use for coloring the points.
 #' @return A ggplot object with added marginal histograms.
-#' @importFrom ggplot2 ggplot aes geom_point theme theme_bw
+#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw
 #' @importFrom ggExtra ggMarginal
 #' @examples
 #' # Assuming `se` is a SummarizedExperiment object with relevant data
@@ -25,17 +25,24 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var) {
 
   # Convert the desired column data to a data frame for ggplot
   plot_data <- as.data.frame(colData(se)[, required_vars])
-
+  colnames(plot_data) <- required_vars
   # Create the base ggplot
-  p <- ggplot(plot_data, aes_string(x=x_var, y=y_var, color=color_var)) +
+  # Convert string to symbols
+  x_sym <- sym(x_var)
+  y_sym <- sym(y_var)
+  color_sym <- sym(color_var)
+
+  # Use aes() with !! to force evaluation of the symbols
+  p <- ggplot(plot_data, aes(x = !!x_sym, y = !!y_sym, color = !!color_sym)) +
     geom_point() +
-    theme(legend.position="left")
+    theme(legend.position = "left")
+
+  # Add theme
+  p <- p + theme_bw()
 
   # Add marginal histograms
   p <- ggMarginal(p, type="histogram", groupColour=TRUE, groupFill=TRUE)
 
-  # Add theme
-  p <- p + theme_bw()
   # Return the plot
   return(p)
 }

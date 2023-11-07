@@ -17,14 +17,8 @@
 #' @export
 load_tumor_immune_phenotype_signature <- function() {
   # Load the data file
-  load("data/tumor_immune_phenotype_signature.rda")
-
-  # Check if the signature object exists after loading
-  if (exists("tumor_immune_phenotype_signature", inherits = FALSE)) {
-    return(tumor_immune_phenotype_signature)
-  } else {
-    stop("tumor_immune_phenotype_signature not found in the loaded data.")
-  }
+  data("tumor_immune_phenotype_signature",package = "OvRSeq")
+  return(tumor_immune_phenotype_signature)
 }
 
 
@@ -114,12 +108,8 @@ train_rf_classifier_infiltration_status <- function(se, gene_signature, num_esti
 #'
 #' @export
 load_classifier_infiltration_status <- function() {
-  load("data/classifier_infiltration_status.rda")
-  if (exists("classifier_infiltration_status", inherits = FALSE)) {
-    return(classifier_infiltration_status)
-  } else {
-    stop("Classifier 'classifier_infiltration_status' not found in the loaded data.")
-  }
+  data("classifier_infiltration_status",package = "OvRSeq")
+  return(classifier_infiltration_status)
 }
 
 
@@ -170,6 +160,8 @@ classify_infiltration_status <- function(se, classifier, gene_signature) {
   # Add the predictions to colData
   colData(se)$InfiltrationStatus <- predicted_status
 
+  # Print message to console
+  cat("Classification complete: ", length(pred), "samples were classified for Infiltration status.\n")
   # Return the updated SummarizedExperiment object
   return(se)
 }

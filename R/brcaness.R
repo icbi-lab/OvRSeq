@@ -66,12 +66,9 @@ train_rf <- function(se, label,gene_signature){
 #'
 #' @export
 load_brcaness_classifier <- function() {
-  load("data/brcaness_classifier.rda")
-  if (exists("brcaness_classifier", inherits = FALSE)) {
-    return(brcaness_classifier)
-  } else {
-    stop("brcaness_classifier not found in the loaded data.")
-  }
+  data("brcaness_classifier",package = "OvRSeq")
+  return(brcaness_classifier)
+
 }
 
 

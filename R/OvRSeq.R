@@ -34,34 +34,69 @@ OvRSeq <- function(se, normalize = FALSE){
     warning("Normalization is set to FALSE but data seems to be numeric. Ensure this is intentional.")
   }
 
-  # Classify BRCAness status
-  brcaness_classifier <- load_brcaness_classifier()
-  brcaness_signature <- load_brcaness_signature()
-  se <- classify_brcaness(se, brcaness_classifier, brcaness_signature)
+  # Wrapping each analysis block within a tryCatch to handle potential errors
+  tryCatch({
+    brcaness_classifier <- load_brcaness_classifier()
+    brcaness_signature <- load_brcaness_signature()
+    se <- classify_brcaness(se, brcaness_classifier, brcaness_signature)
+  }, warning = function(w) {
+    warning("Failed to classify BRCAness: ", w$message)
+  })
 
-  #Classify Infiltration status
-  classifier_infiltration_status <- load_classifier_infiltration_status()
-  immune_phenotype_signature <- load_tumor_immune_phenotype_signature()
-  se <-classify_infiltration_status(se,classifier_infiltration_status,immune_phenotype_signature)
+  tryCatch({
+    classifier_infiltration_status <- load_classifier_infiltration_status()
+    immune_phenotype_signature <- load_tumor_immune_phenotype_signature()
+    se <- classify_infiltration_status(se, classifier_infiltration_status, immune_phenotype_signature)
+  }, warning = function(w) {
+    warning("Failed to classify infiltration status: ", w$message)
+  })
 
-  # Determine consensus molecular subtypes
-  se <- get_consensus_ov_subtypes(se, ids_type = "symbol")
+  tryCatch({
+    se <- get_consensus_ov_subtypes(se, ids_type = "symbol")
+  }, warning = function(w) {
+    warning("Failed to determine consensus molecular subtypes: ", w$message)
+  })
 
-  # Calculate the Immunophenoscore
-  se <- calculateIPS(se)
+  tryCatch({
+    se <- calculateIPS(se)
+  }, warning = function(w) {
+    warning("Failed to calculate IPS: ", w$message)
+  })
 
-  # Compute scores for standard immune gene signatures
-  immune_signatures <- load_immune_signatures()
-  se <- immune_signature_score(se, genelist = immune_signatures)
+  tryCatch({
+    immune_signatures <- load_immune_signatures()
+    se <- immune_signature_score(se, genelist = immune_signatures)
+  }, warning = function(w) {
+    warning("Failed to compute scores for standard immune gene signatures: ", w$message)
+  })
 
-  # Compute average expression for small immune gene signatures
-  small_immune_signatures <- load_small_immune_signatures()
-  se <- avg_expression_for_signature_se(se, small_immune_signatures)
+  tryCatch({
+    small_immune_signatures <- load_small_immune_signatures()
+    se <- avg_expression_for_signature_se(se, small_immune_signatures)
+  }, warning = function(w) {
+    warning("Failed to compute average expression for small immune gene signatures: ", w$message)
+  })
 
   # Perform immune deconvolution using multiple methods
   immunedeconv_methods <- c("quantiseq", "timer", "mcp_counter", "epic")
   for (method in immunedeconv_methods) {
-    se <- deconvolute_immune(se, method)
+    tryCatch({
+      se <- deconvolute_immune(se, method)
+    }, warning = function(w) {
+      warning(paste("Failed immune deconvolution using", method, ":", w$message))
+    })
+  }
+
+  # Specify the object names to be removed
+  objs_to_remove <- c("brcaness_classifier", "classifier_infiltration",
+                      "immune_signatures", "IPS_genes",
+                      "brcaness_signature", "tumor_immune_phenotype_signature")
+
+  # Remove objects if they exist in the global environment
+  for (obj in objs_to_remove) {
+    if (exists(obj, envir = .GlobalEnv)) {
+      rm(list = obj, envir = .GlobalEnv)
+    }
   }
 
   # Return the modified SummarizedExperiment object

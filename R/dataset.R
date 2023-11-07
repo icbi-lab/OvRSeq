@@ -20,10 +20,12 @@
 #'
 #' @export
 load_TCGA_OV <- function() {
-  load("data/TCGA_OV.rda")
-  if (exists("TCGA_OV", inherits = FALSE)) {
-    return(TCGA_OV)
-  } else {
-    stop("TCGA_OV not found in the loaded data.")
-  }
+  # Load the TCGA_OV dataset
+  data("TCGA_OV", package = "OvRSeq")
+
+  # Return the dataset
+  return(TCGA_OV)
 }
+
+
+

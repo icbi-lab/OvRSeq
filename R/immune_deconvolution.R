@@ -5,7 +5,7 @@
 #' @param se A Summarized Experiment of gene expression values (logTPM+1), where rows are genes and columns are samples.
 #' @param method A character string indicating the deconvolution method to be used. See details for available methods.
 #' @return A list with deconvolution results.
-#' @importFrom immunedeconv deconvolute
+#' @import immunedeconv
 #' @examples
 #' # data <- ... # Your gene expression data (logTPM+1)
 #' # res <- deconvolute_immune(data, method="timer")

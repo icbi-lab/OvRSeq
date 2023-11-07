@@ -19,27 +19,24 @@ Certainly! Below is an example of how you might rewrite the README.md for the Ov
 
 ## Features and Functions
 
-OvRSeq includes the following key functions:
+Key features provided by OvRSeq include:
 
-- `avg_expression_for_signature_se`: Computes average gene expression values and enriches `colData` in `SummarizedExperiment` objects.
+- Evaluation of BRCAness status by leveraging a predictive model developed from the TCGA-OV dataset, which helps in identifying the likelihood of BRCAness in ovarian cancer samples.
 
-- `brcaness_classifier`: Contains a trained Random Forest model for predicting BRCAness based on a 24-gene expression signature derived from the TCGA-OV dataset.
+- Determination of tumor immune phenotypes by assessing the spatial distribution patterns of CD8+ T cells within the tumor microenvironment, aiding in the understanding of immune evasion mechanisms in cancer.
 
-- `calculateIPS`: Calculates the Immunophenoscore (IPS) and its component scores from a `SummarizedExperiment` object.
+- Molecular subtype classification through a consensus approach that categorizes ovarian cancer into distinct subtypes, enabling tailored therapeutic strategies.
 
-- `classify_brcaness`: Uses the BRCAness classifier to categorize samples based on their likelihood of BRCAness.
+- Immune profile characterization with the calculation of the Immunophenoscore (IPS), which includes assessments of various immune cell types and their activation states.
 
-- `deconvolute_immune`: Deconvolutes immune cell fractions from gene expression data using the `immunedeconv` package.
+- Immune deconvolution from gene expression data, which parses out the proportions of different immune cell types, providing insights into the immune landscape of ovarian cancer samples.
 
-- `get_consensus_ov_subtypes`: Implements a consensus classifier to determine molecular subtypes of high-grade serous ovarian cancer.
+- Calculation of enrichment scores for multiple immune-related gene signatures, employing the GSVA method to determine the relative activation of different immune pathways.
 
-- `immune_signature_score`: Calculates enrichment scores for various immune signatures using the gene set variation analysis (GSVA) method.
+- Averaging of expression levels across smaller, defined immune-related gene sets, offering a precise quantification of signature expressions in a given dataset.
 
-- `load_TCGA_OV`: Provides an interface to load the TCGA-OV dataset as a `SummarizedExperiment` object.
+OvRSeq effectively serves as a valuable resource for researchers focusing on the molecular and immunological characterization of ovarian cancer, supporting the drive towards precision medicine by furnishing a multi-dimensional analysis of gene expression data.
 
-- `ssGSEA_OV_custom`: Performs single-sample Gene Set Enrichment Analysis (ssGSEA) using custom gene sets and the `GSVA` package.
-
-- `tumor_immune_phenotype_signature`: A gene signature for classifying tumor immune phenotypes in ovarian cancer based on the spatial distribution of CD8+ T cells.
 
 ## Example Usage
 
@@ -47,14 +44,18 @@ Here's how to calculate the average expression for a signature and enrich `colDa
 
 ```r
 library(OvRSeq)
-# Assuming 'se' is a SummarizedExperiment object
-se <- avg_expression_for_signature_se(se)
+#Load TCGA-OV dataset 
+load_TCGA_OV()
 ```
 
-To classify samples for BRCAness:
+To perform the main analysis :
 
 ```r
-brcaness_status <- classify_brcaness(se)
+res <- OvRSeq(TCGA_OV, normalize = F)
+```
+Plot results
+```{r}
+plot_ggmarginal(se, x_var = "NK cells Becht/MCPcounter" , y_var = "EXPAND_IMM Ayers", color_var = "BRCAness")
 ```
 
 For a full list of functions and their descriptions, consult the package documentation.

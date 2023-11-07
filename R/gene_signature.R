@@ -18,12 +18,8 @@
 #'
 #' @export
 load_brcaness_signature <- function() {
-  load("data/brcaness_signature.rda")
-  if (exists("brcaness_signature", inherits = FALSE)) {
-    return(brcaness_signature)
-  } else {
-    stop("brcaness_signature not found in the loaded data.")
-  }
+  data("brcaness_signature",package = "OvRSeq")
+  return(brcaness_signature)
 }
 
 #' Load Immune Signatures
@@ -50,12 +46,9 @@ load_brcaness_signature <- function() {
 #'
 #' @export
 load_immune_signatures <- function() {
-  load("data/immune_signatures.rda")
-  if (exists("immune_signatures", inherits = FALSE)) {
-    return(immune_signatures)
-  } else {
-    stop("immune_signatures not found in the loaded data.")
-  }
+  data("immune_signatures", package = "OvRSeq")
+  return(immune_signatures)
+
 }
 
 #' Load Small Immune Signatures
@@ -82,10 +75,7 @@ load_immune_signatures <- function() {
 #'
 #' @export
 load_small_immune_signatures <- function() {
-  load("data/small_immune_signatures.rda")
-  if (exists("small_immune_signatures", inherits = FALSE)) {
-    return(small_immune_signatures)
-  } else {
-    stop("small_immune_signatures not found in the loaded data.")
-  }
+  data("small_immune_signatures",package = "OvRSeq")
+  return(small_immune_signatures)
+
 }
