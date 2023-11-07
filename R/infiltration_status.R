@@ -159,6 +159,8 @@ classify_infiltration_status <- function(se, classifier, gene_signature) {
     stop("Input must be a SummarizedExperiment object.")
   }
 
+  # Check gene_signature
+  gene_signature <- intersect(rownames(se), gene_signature)
   # Extract gene expression matrix for the gene signature
   gene_expression <- assay(se)[gene_signature, , drop = FALSE]
 

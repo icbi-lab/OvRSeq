@@ -1,6 +1,6 @@
 Package: OvRSeq
 Title: Ovarian Cancer RNA-Seq Analysis Package
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
     person("Monfort-Lanzas", "Pablo", 
         email = "pablo.monfort@i-med.ac.at", role = c("aut", "cre")),
@@ -15,12 +15,22 @@ Encoding: UTF-8
 LazyData: true
 Depends:
   R (>= 3.5.0),
-   biomaRt,
-  SummarizedExperiment,
-  EnsDb.Hsapiens.v86
 Imports:
-  caret,
-  biomaRt,
-  SummarizedExperiment,
-  EnsDb.Hsapiens.v86
+    ggplot2,
+    ggExtra,
+    SummarizedExperiment,
+    S4Vectors,
+    caret,
+    consensusOV,
+    GSVA,
+    immunedeconv,
+    AnnotationDbi,
+    biomaRt,
+    ensembldb,
+    IRanges,
+    org.Hs.eg.db,
+    EnsDb.Hsapiens.v86
+Suggests:
+    knitr,
+    rmarkdown,
 RoxygenNote: 7.2.3

@@ -1,6 +1,24 @@
-
-
-#se <- load_TCGA_OV()
+#' Comprehensive RNA Sequencing-based Characterization of HGSOC Samples
+#'
+#' This function provides an all-encompassing analysis of high-grade serous ovarian cancer (HGSOC)
+#' RNA-seq data. It integrates various predictive biomarkers and performs a multi-faceted immune
+#' profiling, leveraging a 24-gene expression signature to classify BRCAness, subtype classification,
+#' immune environment profiling, and immune cell deconvolution.
+#'
+#' @param se A SummarizedExperiment object containing RNA-seq data for HGSOC samples.
+#' @param normalize A logical parameter indicating whether the assay data should be normalized.
+#'                  If FALSE, the function will expect raw count data in integer form.
+#' @return Returns a SummarizedExperiment object enriched with BRCAness classification,
+#'         molecular subtype classification, immune phenotyping, IPS scoring, immune signatures,
+#'         and immune cell deconvolution estimates.
+#' @importFrom SummarizedExperiment assay colData
+#' @examples
+#' # Load data
+#' se <- load_TCGA_OV()
+#' # Run the OvRSeq analysis pipeline
+#' se <- OvRSeq(se)
+#'
+#' @export
 OvRSeq <- function(se, normalize = FALSE){
   # Validate input
   if (!inherits(se, "SummarizedExperiment")) {
@@ -41,7 +59,7 @@ OvRSeq <- function(se, normalize = FALSE){
   se <- avg_expression_for_signature_se(se, small_immune_signatures)
 
   # Perform immune deconvolution using multiple methods
-  immunedeconv_methods <- c("quantiseq", "timer", "mcp_counter", "xcell", "epic")
+  immunedeconv_methods <- c("quantiseq", "timer", "mcp_counter", "epic")
   for (method in immunedeconv_methods) {
     se <- deconvolute_immune(se, method)
   }

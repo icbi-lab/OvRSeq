@@ -52,3 +52,9 @@ icon7_dataset <- function(){
 
 }
 
+run_test <- function(){
+  library(OvRSeq)
+  se <- load_TCGA_OV()
+  se <- OvRSeq(se, normalize = F)
+
+}
