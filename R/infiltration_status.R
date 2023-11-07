@@ -161,7 +161,7 @@ classify_infiltration_status <- function(se, classifier, gene_signature) {
   colData(se)$InfiltrationStatus <- predicted_status
 
   # Print message to console
-  cat("Classification complete: ", length(pred), "samples were classified for Infiltration status.\n")
+  cat("Classification complete: ", length(predicted_status), "samples were classified for Infiltration status.\n")
   # Return the updated SummarizedExperiment object
   return(se)
 }
