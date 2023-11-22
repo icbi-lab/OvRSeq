@@ -303,3 +303,12 @@ NULL
 #' @docType data
 #' @name IPS_genes
 NULL
+
+#' Internal tcgaStats Data
+#'
+#' Description of the tcgaStats data and its structure. This data is for internal package use.
+#'
+#' @format A data frame with x rows and y columns.
+#' @keywords internal
+#' @name tcgaStats
+NULL
