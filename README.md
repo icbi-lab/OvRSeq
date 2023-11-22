@@ -6,6 +6,16 @@
 
 Cancer immunotherapy has shown limited efficacy in high-grade serous ovarian cancer (HGSOC), prompting clinical trials combining immunotherapy with poly-ADP-ribose polymerase (PARP) inhibitors. Identifying predictive biomarkers is crucial. We introduce a novel diagnostic algorithm and an R package, OvRSeq, for comprehensive RNA sequencing-based characterization of HGSOC samples. Leveraging a 24-gene expression signature, OvRSeq classifies samples for BRCAness, a homologous recombination repair deficiency (HRD) phenotype. It thoroughly profiles the immune environment, including molecular subtype, tumor-immune phenotype, immunophenoscore (IPS), established and novel immune signatures (e.g., IFNg gene set, T cell inflammation, exhaustion, cytolytic activity, immune checkpoints), and estimates infiltrated immune cells via deconvolution methods. OvRSeq also provides an indicator for combination therapy response by assessing BRCAness within an immune environment balanced between activation and suppression.
 
+## Dependencies
+
+OvRseq has dependencies on packages outside CRAN. Please make sure you install them before installing it.
+
+
+```
+remotes::install_github("GfellerLab/EPIC")
+BiocManager::install("consensusOV")
+```
+
 ## Installation
 
 You can install the latest version of OvRSeq from GitHub with:
@@ -51,11 +61,11 @@ load_TCGA_OV()
 To perform the main analysis :
 
 ```r
-res <- OvRSeq(TCGA_OV, normalize = F)
+se <- OvRSeq(TCGA_OV, normalize = F)
 ```
 Plot results
 ```{r}
-plot_ggmarginal(se, x_var = "NK cells Becht/MCPcounter" , y_var = "EXPAND_IMM Ayers", color_var = "BRCAness")
+plot_ggmarginal(se, x_var = "CD8 Jiang" , y_var =  "Monocyte|quantiseq" , color_var = "BRCAness")
 ```
 
 For a full list of functions and their descriptions, consult the package documentation.

@@ -11,6 +11,7 @@
 #' @return A ggplot object with added marginal histograms.
 #' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw
 #' @importFrom ggExtra ggMarginal
+#' @importFrom rlang sym
 #' @examples
 #' # Assuming `se` is a SummarizedExperiment object with relevant data
 #' # plot_ggmarginal(se, "variable1", "variable2", "groupingVar")
@@ -19,12 +20,13 @@
 plot_ggmarginal <- function(se, x_var, y_var, color_var) {
   # Check that the provided variables are in colData
   required_vars <- c(x_var, y_var, color_var)
-  if (!all(required_vars %in% colnames(colData(se)))) {
+  if (!all(required_vars %in% c(rownames(assay(se)),colnames(colData(se))))) {
     stop("Not all specified variables are present in colData of the SummarizedExperiment object.")
   }
 
   # Convert the desired column data to a data frame for ggplot
-  plot_data <- as.data.frame(colData(se)[, required_vars])
+  data <- cbind(colData(se), t(assay(se)))
+  plot_data <- as.data.frame(data[, required_vars])
   colnames(plot_data) <- required_vars
   # Create the base ggplot
   # Convert string to symbols
