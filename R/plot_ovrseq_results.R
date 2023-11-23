@@ -17,9 +17,9 @@
 #' # plot_ggmarginal(se, "variable1", "variable2", "groupingVar")
 #'
 #' @export
-plot_ggmarginal <- function(se, x_var, y_var, color_var) {
+plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
   # Check that the provided variables are in colData
-  required_vars <- c(x_var, y_var, color_var)
+  required_vars <- c(x_var, y_var, if (!is.na(color_var)) color_var)
   if (!all(required_vars %in% c(rownames(assay(se)),colnames(colData(se))))) {
     stop("Not all specified variables are present in colData of the SummarizedExperiment object.")
   }
@@ -32,18 +32,30 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var) {
   # Convert string to symbols
   x_sym <- sym(x_var)
   y_sym <- sym(y_var)
-  color_sym <- sym(color_var)
+
+  if (!is.na(color_var)){
+    color_sym <- sym(color_var)
+  }
 
   # Use aes() with !! to force evaluation of the symbols
-  p <- ggplot(plot_data, aes(x = !!x_sym, y = !!y_sym, color = !!color_sym)) +
-    geom_point() +
+  if (!is.na(color_var)){
+    p <- ggplot(plot_data, aes(x = !!x_sym, y = !!y_sym, color = !!color_sym))
+  } else{
+    p <- ggplot(plot_data, aes(x = !!x_sym, y = !!y_sym))
+  }
+  p <- p + geom_point() +
     theme(legend.position = "left")
 
   # Add theme
-  p <- p + theme_bw()
+  p <- p + theme_minimal() #+ coord_fixed(ratio = 1.5)
 
   # Add marginal histograms
-  p <- ggMarginal(p, type="histogram", groupColour=TRUE, groupFill=TRUE)
+  if (!is.na(color_var)){
+    p <- ggMarginal(p, type="histogram", groupColour=TRUE, groupFill=TRUE)
+  } else {
+    p <- ggMarginal(p, type="histogram", groupColour=F, groupFill=F)
+
+  }
 
   # Return the plot
   return(p)

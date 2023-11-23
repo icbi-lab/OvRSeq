@@ -4,7 +4,7 @@
 \alias{plot_ggmarginal}
 \title{Plot Marginal Distributions for OvRSeq Results}
 \usage{
-plot_ggmarginal(se, x_var, y_var, color_var)
+plot_ggmarginal(se, x_var, y_var, color_var = NA)
 }
 \arguments{
 \item{se}{A SummarizedExperiment object containing results from OvRSeq.}

@@ -24,34 +24,20 @@ generateReport <- function(se, outputDir) {
   # Iterate over each patient/sample in se
   patientIDs <- rownames(colData(se))
   for (patientID in patientIDs) {
-    # Extract patient data
-    # Extract patient data as a data frame
-    patientData <- colData(se)[patientID,]
+    # ... (previous code to prepare patientData and reportData)
 
-    # Extract common features and filter patient data
-    common_features <- intersect(colnames(patientData), tcgaStats$Feature)
-    patientData <- patientData[,common_features]
-
-    # Convert all values to numeric
-    patientData <- data.frame(sapply(patientData, as.numeric))
-    colnames(patientData) <- patientID
-    # Merge patient data with TCGA stats
-    reportData <- cbind(patientData, tcgaStats[common_features,])
+    # Convert reportData to a LaTeX table string
+    latexTable <- print(xtable(reportData), include.rownames = FALSE, include.colnames = TRUE, only.contents = TRUE, comment = FALSE, sanitize.text.function = function(x) x)
 
     # Create a temporary Rmd file for each patient
     rmdFile <- tempfile(fileext = ".Rmd")
 
-    # Write Rmd content
+    # Write Rmd content with the LaTeX table directly embedded
     writeLines(con = rmdFile, text = c(
       "---",
       paste("title: 'OvRSeq Analysis Report for", patientID, "'"),
       "output: pdf_document",
       "---",
-      "",
-      "```{r setup, include=FALSE}",
-      "knitr::opts_chunk$set(echo = TRUE)",
-      "library(ggplot2)",
-      "```",
       "",
       "## OvRSeq Analysis Results for Patient:", patientID,
       "",
@@ -59,9 +45,8 @@ generateReport <- function(se, outputDir) {
       "",
       "### Patient Values and TCGA Reference",
       "",
-      "```{r results-table}",
-      "knitr::kable(reportData)",
-      "```"
+      latexTable,  # Embed the LaTeX table directly
+      ""
       # Additional content, plots, or tables can be added here
     ))
 

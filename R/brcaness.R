@@ -111,6 +111,12 @@ classify_brcaness <- function(se, brcaness_classifier, brcaness_signature) {
   pred <- predict(brcaness_classifier, t(count_data_subset))
   colData(se)$BRCAness <- pred
 
+
+  # Get prediction probabilities
+  # The exact method may vary depending on the classifier used
+  predProbs <- predict(brcaness_classifier, t(count_data_subset), type = "prob")[,"1"]
+  colData(se)$BRCAness_Prob <- predProbs
+
   # Print message to console
   cat("Classification complete: ", length(pred), "samples were classified for BRCAness status.\n")
 

@@ -12,8 +12,8 @@ OvRseq has dependencies on packages outside CRAN. Please make sure you install t
 
 
 ```
-remotes::install_github("GfellerLab/EPIC")
 BiocManager::install("consensusOV")
+BiocManager::install("ensembldb")
 ```
 
 ## Installation
@@ -63,10 +63,20 @@ To perform the main analysis :
 ```r
 se <- OvRSeq(TCGA_OV, normalize = F)
 ```
-Plot results
+* **Plot correlation plot**
+
 ```{r}
-plot_ggmarginal(se, x_var = "CD8 Jiang" , y_var =  "Monocyte|quantiseq" , color_var = "BRCAness")
+plot_ggmarginal(se, x_var = "CD8 Jiang" , y_var =  "Macrophage M2|quantiseq" , color_var = "BRCAness")
 ```
+
+![Correlation plot with the CD8 Jiang geneset score and the Macrophages M2 predicted by quantiseq in the TCGA-OV dataset. Each dot represents a sample, and the color of the dot corresponds to the BRCAness predicted status.](./plots/TCGA_CD8_M2.jpeg)
+
+* **Plot Vulnerability plot**
+
+```{r}
+plot_vulnerabilitymap(se)
+```
+![This vulnerability map illustrates the relationship between BRCAness probability and the cytolytic activity to C1QA ratio (C2C) in HGSOC samples, with colors indicating the calculated vulnerability score, a potential indicator of therapeutic response.](./plots/TCGA_Vulnerability.jpeg)
 
 For a full list of functions and their descriptions, consult the package documentation.
 
