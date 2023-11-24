@@ -29,6 +29,10 @@ Imports:
     ensembldb,
     IRanges,
     org.Hs.eg.db,
+    dplyr,
+    knitr, 
+    reshape2, 
+    rlang
 Suggests:
     knitr,
     rmarkdown,

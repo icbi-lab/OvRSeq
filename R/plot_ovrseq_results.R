@@ -85,6 +85,7 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
 #' @importFrom SummarizedExperiment colData assay
 #' @importFrom ggplot2 ggplot aes_string geom_point theme
 #' @importFrom ggExtra ggMarginal
+#' @export
 plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var = "BRCAness") {
   # Load TCGA_OV dataset (modify this as per your actual data loading method)
   tcga_ov <- load_TCGA_OV()  # Placeholder function
