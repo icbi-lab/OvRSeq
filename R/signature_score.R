@@ -126,3 +126,57 @@ computeCytC1qaRatio <- function(se) {
 
   return(se)
 }
+
+#' Compute Vulnerability Score for SummarizedExperiment Data
+#'
+#' This function calculates the vulnerability score for each sample in a `SummarizedExperiment` object. It requires the BRCAness probability and the ratio of cytolytic activity to C1QA (C2C ratio) as part of the dataset. If these are not present, the function computes them. The vulnerability score is computed using specified coefficients and a transformation function.
+#'
+#' @param se A `SummarizedExperiment` object that contains or can compute the BRCAness probability and the C2C ratio.
+#'
+#' @return The input `SummarizedExperiment` object with added columns for the mapped C2C ratio and the computed vulnerability score.
+#'
+#' @details
+#' The function first checks if the `SummarizedExperiment` object contains `BRCAness_Prob` and `ratio_CYT_C1QA`. If not, it computes these using `classify_brcaness` and `computeCytC1qaRatio` functions, respectively. The vulnerability score is calculated using a logistic transformation of the C2C ratio and a linear combination of this transformed value with the BRCAness probability, using predefined coefficients. This score aims to reflect the patient's vulnerability based on their molecular profile.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' se <- computeVulnerabilityScore(se)
+#'
+#' @importFrom SummarizedExperiment colData
+#' @export
+computeVulnerabilityScore <- function(se){
+  # Check for required data and compute if necessary
+  if (!("BRCAness_Prob" %in% colnames(colData(se)))) {
+    #BRCAness probability is computed here and added to colData
+    brcaness_classifier <- load_brcaness_classifier()
+    brcaness_signature <- load_brcaness_signature()
+    se <- classify_brcaness(se, brcaness_classifier, brcaness_signature)
+  }
+  if (!("ratio_CYT_C1QA" %in% colnames(colData(se)))) {
+    #C2C ratio is computed here and added to colData
+    se <- computeCytC1qaRatio(se)
+  }
+
+  # External functions
+  mean_C2C <- 0.3013737
+  sd_C2C <- 0.1359056
+
+  mapping <- function(x) {
+    v = x
+    w = 1/(1+exp(-(pi*(x-(mean_C2C)/(sd_C2C)))))
+    return(w)
+  }
+
+  # Coefficients for vulnerability score calculation
+  coefBRCAness <- 2.596728
+  coefRatio <- 1.165859
+
+  # Extract relevant data for plotting
+  data <- colData(se)
+  score <- (data$ratio_CYT_C1QA * coefRatio) + (data$BRCAness_Prob * coefBRCAness)
+  colData(se)$mapped_ratio_CYT_C1QA <- mapping(data$ratio_CYT_C1QA)
+  colData(se)$Vulnerability_Score <- score
+  cat("The VulnerabilityScore have been successfully computed and added to the dataset.\n")
+
+  return(se)
+}

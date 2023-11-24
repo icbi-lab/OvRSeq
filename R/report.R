@@ -40,16 +40,20 @@ OvRSeqReport <- function(se, outputDir) {
   for (patientID in patientIDs) {
     # Extract patient data
     patientColData <- colData(se)[patientID,]
-    patientExpressionData <- t(assay(se)[c("CD274", "GZMB", "PRF1", "C1QA","CD8A"),patientID])
+    vector_genes <- c("CD274", "GZMB", "PRF1", "C1QA","CD8A", "IDO1", "FOXP3",
+                      "TREM2", "STAT1", "HLA-DRA", "CXCL10")
+    patientExpressionData <- t(assay(se)[vector_genes,patientID])
     # Keep only numeric columns
     patientData <- cbind(patientColData,patientExpressionData)
     #PLot
     p1 <- plot_vulnerabilitymap(se[,patientID])
+    p2 <- plot_ggmarginal_sample(se[,patientID],color_var = "BRCAness")
     # Create a temporary file for the plot
     plotFile1 <- tempfile(fileext = ".jpeg")
+    plotFile2 <- tempfile(fileext = ".jpeg")
 
     ggsave(plotFile1, plot = p1, width = 148, height = 148, units = "mm", dpi = 600)
-    # Extract common features and filter patient data
+    ggsave(plotFile2, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
@@ -61,33 +65,31 @@ OvRSeqReport <- function(se, outputDir) {
       #"\\hline",  # Horizontal line
       paste0("Infiltration Status & ", patientData$InfiltrationStatus,  " \\\\"),  # Row for Infiltration Status
       #"\\hline",  # Horizontal line
-      paste0("Tumor Molecular Subtypes & ", escapeUnderscores(patientData$Tumor_Molecular_Subtypes),  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("BRIT & ", "",  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Molecular Subtypes & ", escapeUnderscores(patientData$Tumor_Molecular_Subtypes),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("BRCAness immunotype & ", patientData$BRCAness_immunotype,  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Vulnerability Score & ", round(patientData$Vulnerability_Score,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Immuno Phenoscore & ", round(patientData$IPS,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("CYT to C1QA Ratio & ", round(patientData$mapped_ratio_CYT_C1QA,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
       paste0("Angiogenesis Score & ", "",  " \\\\"),  # Row for Tumor Molecular Subtypes
+
       "\\hline",  # Horizontal line
       "\\end{tabular}",
       sep = "\n")
 
     referenceTable <- paste(
-      "\\begin{table}[h!]",
-      "\\centering",
       "\\begin{tabular}{lll}",  # Define the table with 3 columns
       "\\hline",  # Horizontal line
       "Feature & Patient Value & TCGA IQR \\\\",  # Table header
       "\\hline",  # Horizontal line
-      paste0("Immuno Phenoscore & ", patientData$IPS, " & ", tcgaStats["IPS", "IQR"], " \\\\"),  # Row for Immuno Phenoscore
-      paste0("CYT to C1QA Ratio & ", patientData$ratio_CYT_C1QA, " & ", tcgaStats["ratio_CYT_C1QA", "IQR"], " \\\\"),  # Row for CYT to C1QA Ratio
-      paste0("IFNG Higgs & ", round(patientData$`IFNG Higgs`,3), " & ", tcgaStats["IFNG Higgs", "IQR"], " \\\\"),  # Row for IFNG Higgs
-      paste0("IFNG Ayers & ", round(patientData$`IFNG Ayers`,3), " & ", tcgaStats["IFNG Ayers", "IQR"], " \\\\"),  # Row for IFNG Ayers
-      paste0("CD274 & ", round(patientData$CD274,3), " & ", tcgaStats["CD274", "IQR"], " \\\\"),  # Row for CD274
-      paste0("GZMB & ", round(patientData$GZMB,3), " & ", tcgaStats["GZMB", "IQR"], " \\\\"),  # Row for GZMB
-      paste0("PRF1 & ", round(patientData$PRF1,3), " & ", tcgaStats["PRF1", "IQR"], " \\\\"),  # Row for PRF1
-      paste0("C1QA & ", round(patientData$C1QA,3), " & ", tcgaStats["C1QA", "IQR"], " \\\\"),  # Row for C1QA
-      paste0("CD8A & ", round(patientData$CD8A,3), " & ", tcgaStats["CD8A", "IQR"], " \\\\"),  # Row for CD8A
+      paste(sapply(vector_genes, function(gene) {
+        if (gene %in% names(patientData) && gene %in% rownames(tcgaStats)) {
+          paste0(gene, " & ", round(patientData[[gene]], 3), " & ", tcgaStats[gene, "IQR"], " \\\\")
+        }
+      }), collapse = "\n"),
       "\\hline",  # Horizontal line
       "\\end{tabular}",
-      "\\end{table}",
-      sep = "\n")
+      sep = "\n"
+    )
 
 
     # Create a temporary Rmd file for each patient
@@ -103,29 +105,39 @@ OvRSeqReport <- function(se, outputDir) {
       "   - \\usepackage{graphicx}",
       "---",
       "",
-      "## OvRSeq Analysis Results for Patient: ", patientID,
+      paste0("## OvRSeq Analysis Results for Patient: ", patientID),
       "",
-      "The report begins with the Vulnerability Map, illustrating key aspects of high-grade serous ovarian cancer (HGSOC). It includes the BRCAness Status, showing the probability of BRCA-related vulnerabilities, Infiltration Status, indicating immune system engagement, and Tumor Molecular Subtypes, essential for targeted therapeutic strategies. This section lays the groundwork for a detailed patient-specific molecular analysis.",
+      "The report starts with a Vulnerability Map highlighting HGSOC aspects, including BRCAness Status, Infiltration Status, and Tumor Molecular Subtypes, setting the stage for a personalized molecular analysis.",
       "",
-      "\\begin{multicols}{2}",  # Start two-column layout
+      "\\begin{multicols}{2}",  # Start first two-column layout
       "",
-      paste0("\\includegraphics{", gsub("\n", "", plotFile1), "}"),  # Include the plot with newline removed
+      paste0("\\includegraphics{", gsub("\n", "", plotFile1), "}"),  # Include the first plot with newline removed
       "",
       "\\columnbreak",  # Break to the second column
       "",
-      "\\textbf{Patient Values and TCGA Reference}",
+      "\\textbf{Patient Values}",
       "",
-      # Add patient information here
-      patientTable,
+      patientTable,  # Add patient information here
       "",
-      "\\end{multicols}",  # End two-column layout
+      "\\end{multicols}",  # End first two-column layout
       "",
       "\\textbf{Molecular markers and TCGA-OV Reference Values}",
-
-      # ... rest of the report content
+      "",
       "This report section compares the patient's molecular markers with TCGA interquartile ranges (IQR). The table includes key markers like Immuno Phenoscore and CYT to C1QA ratio, crucial for personalized cancer profiling and treatment.",
-      referenceTable
+      "",
+      "\\begin{multicols}{2}",  # Start second two-column layout
+      "",
+      paste0("\\includegraphics{", gsub("\n", "", plotFile2), "}"),  # Include the second plot with newline removed
+      "",
+      "\\columnbreak",  # Break to the second column in the second layout
+      "",
+      referenceTable,  # Add reference table here
+      "",
+      "\\end{multicols}",  # End second two-column layout
+      ""
+      # ... rest of the report content
     ))
+
 
 
     # Render the Rmd file to PDF
@@ -134,5 +146,9 @@ OvRSeqReport <- function(se, outputDir) {
 
     # Optionally, delete the temporary plot file
     unlink(plotFile1)
+    unlink(plotFile2)
   }
 }
+
+# ... following code ...
+

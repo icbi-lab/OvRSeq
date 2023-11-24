@@ -78,8 +78,6 @@ OvRSeq <- function(se, normalize = FALSE){
   tryCatch({
     immune_signatures <- load_immune_signatures()
     se <- immune_signature_score(se, genelist = immune_signatures)
-  }, warning = function(w) {
-    warning("Failed to compute scores for standard immune gene signatures: ", w$message)
   }, error = function(e) {
     warning("Error in computing scores for standard immune gene signatures: ", e$message)
   })
@@ -108,11 +106,29 @@ OvRSeq <- function(se, normalize = FALSE){
 
   # C2C Ratio
   tryCatch({
-    se <- computeCytC1qaRatio(se, method)
+    se <- computeCytC1qaRatio(se)
   }, warning = function(w) {
     warning(paste("Warning in computing the CYT to C1QA Ratio", ":", w$message))
   }, error = function(e) {
     warning(paste("Error in computing the CYT to C1QA Ratio", ":", e$message))
+  })
+
+  #Compute BRCAness Immunotype
+  tryCatch({
+    se <- BRCAness_immunotype(se)
+  }, warning = function(w) {
+    warning(paste("Warning in computing the BRCAness_immunotype", ":", w$message))
+  }, error = function(e) {
+    warning(paste("Error in computing the BRCAness_immunotype", ":", e$message))
+  })
+
+  #Compute computeVulnerabilityScore
+  tryCatch({
+    se <- computeVulnerabilityScore(se)
+  }, warning = function(w) {
+    warning(paste("Warning in computing the computeVulnerabilityScore", ":", w$message))
+  }, error = function(e) {
+    warning(paste("Error in computing the computeVulnerabilityScore", ":", e$message))
   })
 
   # Remove specified objects from the global environment

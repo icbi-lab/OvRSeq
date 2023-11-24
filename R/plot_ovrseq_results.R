@@ -47,7 +47,7 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
     theme(legend.position = "left")
 
   # Add theme
-  p <- p + theme_minimal() #+ coord_fixed(ratio = 1.5)
+  p <- p + theme_bw() #+ coord_fixed(ratio = 1.5)
 
   # Add marginal histograms
   if (!is.na(color_var)){
@@ -60,3 +60,69 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
   # Return the plot
   return(p)
 }
+
+
+#' Plot one sample for report
+#'
+#' This function creates a scatter plot with marginal histograms for specified variables from a `SummarizedExperiment` object. It combines the provided `se` object with the TCGA_OV dataset, plots specified variables, and highlights a specific sample from `se` with a distinct style.
+#'
+#' @param se A `SummarizedExperiment` object.
+#' @param x_var A string representing the variable from `se` to be plotted on the x-axis (default is "C1QA").
+#' @param y_var A string representing the variable from `se` to be plotted on the y-axis (default is "CD8A").
+#' @param color_var A string representing the variable from `se` to be used for coloring points (default is "BRCAness_Prob").
+#'
+#' @details
+#' The function first combines the provided `se` object with the TCGA_OV dataset. It then creates a scatter plot for the specified x and y variables, with points colored based on the specified `color_var`. A specific sample from `se` is highlighted in the plot with a black border and white fill, distinct from other data points.
+#'
+#' The function assumes that the TCGA_OV dataset and `se` object have compatible structures and the required columns. The user needs to ensure that the TCGA_OV dataset is loaded and accessible.
+#'
+#' @return A `ggplot` object representing the scatter plot with marginal histograms.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' plot_ggmarginal(se, "C1QA", "CD8A", "BRCAness_Prob")
+#'
+#' @importFrom SummarizedExperiment colData assay
+#' @importFrom ggplot2 ggplot aes_string geom_point theme
+#' @importFrom ggExtra ggMarginal
+plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var = "BRCAness") {
+  # Load TCGA_OV dataset (modify this as per your actual data loading method)
+  tcga_ov <- load_TCGA_OV()  # Placeholder function
+
+  # Combine TCGA_OV dataset with the provided se object
+  combined_data_tcga <- cbind(colData(tcga_ov), t(assay(tcga_ov)))
+  combined_data_se <- rbind(cbind(colData(se), t(assay(se))))
+
+  # Check that the provided variables are in the combined data
+  required_vars <- c(x_var, y_var, color_var)
+  if (!all(required_vars %in% colnames(combined_data_tcga))) {
+    stop("Not all specified variables are present in the combined dataset.")
+  }
+
+  # Prepare the plot data
+  plot_data_tcga <- as.data.frame(combined_data_tcga[, required_vars])
+  plot_data_sample <- as.data.frame(combined_data_se[,c(x_var, y_var)])
+  colnames(plot_data_tcga) <- required_vars
+  colnames(plot_data_sample) <- c(x_var, y_var)
+
+  # Create the base ggplot
+  p <- ggplot(plot_data_tcga, aes_string(x = x_var, y = y_var, color = color_var)) +
+    geom_point() +
+    theme(legend.position = "left")
+
+  # Highlight the specific sample from se
+  p <- p + geom_point(data = plot_data_sample, aes_string(x = x_var, y = y_var),
+                      color = "black", fill = "white", shape = 21, size = 3, stroke = 2)
+
+  # Add theme and marginal histograms
+  p <- p + theme_bw()
+  p <- ggMarginal(p, type = "histogram", groupColour = TRUE, groupFill = TRUE)
+
+  for (obj in objs_to_remove) {
+    if (exists(obj, envir = .GlobalEnv)) {
+      rm(list = obj, envir = .GlobalEnv)
+    }
+  }
+  return(p)
+}
+

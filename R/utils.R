@@ -5,8 +5,11 @@ calculateTcgaStats <- function(tcgaData) {
 
   # Extract colData
   TCGA_OV <- OvRSeq(TCGA_OV, normalize = F)
+  TCGA_OV <- computeCytC1qaRatio(TCGA_OV)
   tcgaColData <- colData(TCGA_OV)
-  tcgaExpressionData <- t(assay(TCGA_OV)[c("CD274", "GZMB", "PRF1", "C1QA","CD8A"),])
+  vector_genes <- c("CD274", "GZMB", "PRF1", "C1QA","CD8A", "IDO1", "FOXP3",
+    "TREM2", "STAT1", "HLA-DRA", "CXCL10")
+  tcgaExpressionData <- t(assay(TCGA_OV)[vector_genes,])
   # Keep only numeric columns
   tcgaColData <- cbind(tcgaColData,tcgaExpressionData)
   numericCols <- sapply(tcgaColData, is.numeric)

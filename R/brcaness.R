@@ -124,3 +124,75 @@ classify_brcaness <- function(se, brcaness_classifier, brcaness_signature) {
 }
 
 
+#' Stratify HGSOC Patients Based on BRCAness and Immune Subtypes
+#'
+#' This function stratifies patients in a `SummarizedExperiment` object into categories based on BRCAness status, tumor immunephenotype, and molecular subtype. It identifies patients with a BRCAness immunetype (BRIT), which combines the BRCAness phenotype with an infiltrated tumor immune phenotype and an immune-reactive molecular subtype (IMR).
+#'
+#' @param se A `SummarizedExperiment` object containing patient data, including BRCAness status, tumor immunephenotype, and molecular subtype.
+#'
+#' @return The modified `SummarizedExperiment` object with an added `immunotype` column in `colData`, classifying each patient as 'BRIT', 'noBRIT', or 'other'.
+#'
+#' @details
+#' The function uses a list of 157 genes and random forest analysis to classify the tumor immunephenotype of each patient as infiltrated, excluded, or desert. The BRIT group consists of patients with BRCAness, an infiltrated tumor immune phenotype, and an immune-reactive molecular subtype (IMR). This group is potentially more responsive to PARP inhibitor and immune checkpoint inhibitor therapies. The function also accounts for the presence of suppressive immune cells and does not show a significant difference in overall survival between BRIT and noBRIT groups. This stratification provides insights into the complex interplay between genetic predisposition and immune response in HGSOC, aiding in personalized treatment planning.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' se <- BRCAness_immunotype(se)
+#'
+#' @importFrom SummarizedExperiment colData
+#' @export
+BRCAness_immunotype <- function(se){
+  # Check and compute necessary values if they are not present
+  if (!("BRCAness" %in% colnames(colData(se)))) {
+    # Compute BRCAness here (placeholder, replace with actual computation)
+    # BRCAness classification
+    tryCatch({
+      brcaness_classifier <- load_brcaness_classifier()
+      brcaness_signature <- load_brcaness_signature()
+      se <- classify_brcaness(se, brcaness_classifier, brcaness_signature)
+    }, warning = function(w) {
+      warning("Failed to classify BRCAness: ", w$message)
+    }, error = function(e) {
+      warning("Error in classifying BRCAness: ", e$message)
+    })
+  }
+  if (!("InfiltrationStatus" %in% colnames(colData(se)))) {
+    ## Infiltration status classification
+    tryCatch({
+      classifier_infiltration_status <- load_classifier_infiltration_status()
+      immune_phenotype_signature <- load_tumor_immune_phenotype_signature()
+      se <- classify_infiltration_status(se, classifier_infiltration_status, immune_phenotype_signature)
+    }, warning = function(w) {
+      warning("Failed to classify infiltration status: ", w$message)
+    }, error = function(e) {
+      warning("Error in classifying infiltration status: ", e$message)
+    })
+  }
+  if (!("Tumor_Molecular_Subtypes" %in% colnames(colData(se)))) {
+    # Consensus molecular subtypes
+    tryCatch({
+      se <- get_consensus_ov_subtypes(se, ids_type = "symbol")
+    }, warning = function(w) {
+      warning("Failed to determine consensus molecular subtypes: ", w$message)
+    }, error = function(e) {
+      warning("Error in determining consensus molecular subtypes: ", e$message)
+    })
+  }
+
+  # Compute immunotype based on existing or computed data
+  data <- colData(se)
+  immunotype <- apply(data, 1, function(sample){
+    if (sample["BRCAness"] == 1 && sample["InfiltrationStatus"] == "Infiltrated" && sample["Tumor_Molecular_Subtypes"] == "IMR_consensus") {
+      return("BRIT")
+    } else if (sample["BRCAness"] == 1 && sample["InfiltrationStatus"] != "Infiltrated" && sample["Tumor_Molecular_Subtypes"] != "IMR_consensus") {
+      return("noBRIT")
+    } else {
+      return("other")
+    }
+  })
+  colData(se)$BRCAness_immunotype <- immunotype
+  cat("Classification complete: ", length(pred), "samples were classified for BRCAness immunotype\n")
+  return(se)
+}
+
+
