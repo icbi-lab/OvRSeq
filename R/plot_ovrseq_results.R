@@ -119,7 +119,7 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
   p <- p + theme_bw()
   p <- ggMarginal(p, type = "histogram", groupColour = TRUE, groupFill = TRUE)
 
-  for (obj in objs_to_remove) {
+  for (obj in c("TCGA_OV")) {
     if (exists(obj, envir = .GlobalEnv)) {
       rm(list = obj, envir = .GlobalEnv)
     }
