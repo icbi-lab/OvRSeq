@@ -83,10 +83,9 @@ OvRSeqReport <- function(se, outputDir) {
       "Feature & Patient Value & TCGA IQR \\\\",  # Table header
       "\\hline",  # Horizontal line
       paste(sapply(vector_genes, function(gene) {
-        if (gene %in% names(patientData) && gene %in% rownames(tcgaStats)) {
           paste0(gene, " & ", round(patientData[[gene]], 3), " & ", tcgaStats[gene, "IQR"], " \\\\")
         }
-      }), collapse = "\n"),
+      ), collapse = "\n"),
       "\\hline",  # Horizontal line
       "\\end{tabular}",
       sep = "\n"
