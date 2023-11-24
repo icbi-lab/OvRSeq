@@ -4,9 +4,11 @@ calculateTcgaStats <- function(tcgaData) {
   }
 
   # Extract colData
-  tcgaColData <- colData(tcgaData)
-
+  TCGA_OV <- OvRSeq(TCGA_OV, normalize = F)
+  tcgaColData <- colData(TCGA_OV)
+  tcgaExpressionData <- t(assay(TCGA_OV)[c("CD274", "GZMB", "PRF1", "C1QA","CD8A"),])
   # Keep only numeric columns
+  tcgaColData <- cbind(tcgaColData,tcgaExpressionData)
   numericCols <- sapply(tcgaColData, is.numeric)
   tcgaColData <- tcgaColData[, numericCols]
 
@@ -21,5 +23,7 @@ calculateTcgaStats <- function(tcgaData) {
   rownames(statsDf) <- NULL
   statsDf$Feature <- colnames(tcgaColData)
   rownames(statsDf) <- statsDf$Feature
+  tcgaStats <- statsDf
+  usethis::use_data(tcgaStats, overwrite = T)
   return(statsDf)
 }

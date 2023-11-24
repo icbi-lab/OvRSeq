@@ -70,7 +70,7 @@ avg_expression_for_signature_se <- function(se, gmt) {
     # Add this to colData of the SummarizedExperiment
     colData(se)[[signature_name]] <- avg_expression
   }
-  cat("The immune signatures have been successfully computed and added to the dataset.\n")
+  cat("The short immune signatures have been successfully computed and added to the dataset.\n")
 
   return(se)
 }

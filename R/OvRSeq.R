@@ -106,6 +106,15 @@ OvRSeq <- function(se, normalize = FALSE){
     })
   }
 
+  # C2C Ratio
+  tryCatch({
+    se <- computeCytC1qaRatio(se, method)
+  }, warning = function(w) {
+    warning(paste("Warning in computing the CYT to C1QA Ratio", ":", w$message))
+  }, error = function(e) {
+    warning(paste("Error in computing the CYT to C1QA Ratio", ":", e$message))
+  })
+
   # Remove specified objects from the global environment
   objs_to_remove <- c("brcaness_classifier", "classifier_infiltration",
                       "immune_signatures", "IPS_genes",

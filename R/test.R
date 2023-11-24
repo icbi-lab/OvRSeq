@@ -48,7 +48,7 @@ icon7_dataset <- function(){
   rownames(count_data) <- metada_sample$Sample
   ICON7 <- SummarizedExperiment(assays=list(counts=as.matrix(t(count_data))),
                                   colData=as.data.frame(metada_sample))
-  return(ICON7)
+  # return(ICON7)
 
 }
 
