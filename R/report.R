@@ -11,6 +11,7 @@
 #' in the specified output directory.
 #'
 #'@importFrom knitr kable
+#'@importFrom ggplot2 ggsave
 #'@import dplyr
 #'
 #'

@@ -191,7 +191,7 @@ BRCAness_immunotype <- function(se){
     }
   })
   colData(se)$BRCAness_immunotype <- immunotype
-  cat("Classification complete: ", length(pred), "samples were classified for BRCAness immunotype\n")
+  cat("Classification complete:  samples were classified for BRCAness immunotype\n")
   return(se)
 }
 
