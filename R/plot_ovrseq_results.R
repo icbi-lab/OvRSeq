@@ -161,16 +161,17 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
 
   # Transform 'quantiseq_data' into a format suitable for plotting
   plot_data <- as.data.frame(t(quantiseq_data))
-  colnames(plot_data) <- "Value"
-  plot_data$Metric <- rownames(plot_data)
-
+  colnames(plot_data) <- c("Row","group_name", "value" )
+  plot_data$Metric <- plot_data$group_name
+  plot_data$Metric <- unlist(lapply(plot_data$Metric,
+                                    function(x) stringr::str_replace_all(x, pattern = "\\|quantiseq", replacement = "")))
   # Create a ggplot
-  p <- ggplot(plot_data, aes(x = Metric, y = Value)) +
-    geom_bar(stat = "identity", color ="#991915") +
-    theme_minimal() +
-    xlab("Quantiseq Metric") +
-    ylab("Value") +
-    ggtitle(paste("Quantiseq Metrics for Sample", sample_id))
+  p <- ggplot(plot_data, aes(x = value, y = Metric)) +
+    geom_bar(stat = "identity", color = "black", fill ="#991915") +
+    theme_bw() +
+    ylab("Quantiseq Metric") +
+    xlab("") +
+    ggtitle("")
 
   return(p)
 }
