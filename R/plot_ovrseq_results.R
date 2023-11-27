@@ -44,7 +44,9 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
     p <- ggplot(plot_data, aes(x = !!x_sym, y = !!y_sym))
   }
   p <- p + geom_point() +
-    theme(legend.position = "left")
+    theme(legend.position = "bottom") +
+    guides(color=guide_legend(nrow=1, byrow=TRUE))
+
 
   # Add theme
   p <- p + theme_bw() #+ coord_fixed(ratio = 1.5)
@@ -117,6 +119,8 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
 
   # Add theme and marginal histograms
   p <- p + theme_bw()
+  p <- p + theme(legend.position = "bottom") +
+    guides(color=guide_legend(nrow=1, byrow=TRUE))
   p <- ggMarginal(p, type = "histogram", groupColour = TRUE, groupFill = TRUE)
 
   for (obj in c("TCGA_OV")) {
@@ -146,6 +150,7 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
 #'
 #' @importFrom SummarizedExperiment colData
 #' @importFrom ggplot2 ggplot aes geom_bar theme_minimal xlab ylab ggtitle
+#' @importFrom stringr str_wrap
 #' @export
 plot_quantiseq_one_sample <- function(se, sample_id) {
   if (!sample_id %in% rownames(colData(se))) {
@@ -165,13 +170,14 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
   plot_data$Metric <- plot_data$group_name
   plot_data$Metric <- unlist(lapply(plot_data$Metric,
                                     function(x) stringr::str_replace_all(x, pattern = "\\|quantiseq", replacement = "")))
+  plot_data <- plot_data[plot_data$Metric != "uncharacterized cell",]
   # Create a ggplot
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#991915") +
-    theme_bw() + coord_fixed(ratio = 0.1) +
-    ylab("Quantiseq Metric") +
+    theme_bw() +
+    ylab("") +
     xlab("") +
-    ggtitle("")
+    ggtitle("Estimated immune cell infiltrate fraction") + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
 
   return(p)
 }
@@ -195,6 +201,7 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
 #'
 #' @importFrom SummarizedExperiment colData
 #' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle
+#' @importFrom stringr str_wrap
 #' @export
 plot_immune_signature_one_sample <- function(se, sample_id) {
   if (!sample_id %in% rownames(colData(se))) {
@@ -205,8 +212,9 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   data <- colData(se)[sample_id, ]
 
   # Filter for columns containing "quantiseq"
-  sign_columns <- c("IFNG Ayers", "INFLAM Spranger" ,"BRCAness_pos", "BRCAness_neg",
-                    "CD8 Jiang", "T_EXCL Jerby-Anon","IFNA_response","ICR")
+  sign_columns <- c("IFNG_Ayers", "Inflamed" ,"BRCAness_pos", "BRCAness_neg",
+                    "T-cell exhaustion", "T-cell exclusion","Interferon alpha response",
+                    "Immunological Constant of Rejection (ICR)")
 
   nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
                  "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
@@ -217,17 +225,16 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   plot_data <- as.data.frame(t(data))
   colnames(plot_data) <- c("Row","group_name", "value" )
   plot_data$Metric <- plot_data$group_name
-  plot_data$Analysis <- unlist(lapply(plot_data$Metric, function(x){
-    ifelse(x %in% c("T cell exhaustion","IFNG"), "Average","GSVA")}))
+  #plot_data$Analysis <- unlist(lapply(plot_data$Metric, function(x){
+  #  ifelse(x %in% c("T cell exhaustion","IFNG"), "Average","GSVA")}))
 
   # Create a ggplot
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#175d92") +
-    facet_grid(~Analysis,scales = "free") +
     theme_bw()  +
-    ylab("Immune pathway/signature scores") +
-    xlab("") +
-    ggtitle("")
+    ggtitle("Immune pathway/signature scores") +
+    ylab("") +
+    xlab("")  + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
 
   return(p)
 }

@@ -77,10 +77,10 @@ OvRSeqReport <- function(se, outputDir) {
     plotFile3 <- tempfile(fileext = ".jpeg")
     plotFile4 <- tempfile(fileext = ".jpeg")
 
-    ggsave(plotFile1, plot = p1, width = 148, height = 148, units = "mm", dpi = 600)
-    ggsave(plotFile2, plot = p2, width = 148, height = 120, units = "mm", dpi = 600)
-    ggsave(plotFile3, plot = p3, width = 148, height = 120, units = "mm", dpi = 600)
-    ggsave(plotFile4, plot = p4, width = 148, height = 120, units = "mm", dpi = 600)
+    ggsave(plotFile1, plot = p1, width = 148, height = 100, units = "mm", dpi = 600)
+    ggsave(plotFile2, plot = p2, width = 148, height = 100, units = "mm", dpi = 600)
+    ggsave(plotFile3, plot = p3, width = 148, height = 100, units = "mm", dpi = 600)
+    ggsave(plotFile4, plot = p4, width = 148, height = 100, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
@@ -123,13 +123,14 @@ OvRSeqReport <- function(se, outputDir) {
     # Write Rmd content
     writeLines(con = rmdFile, text = c(
       "---",
-      paste0("title: 'OvRSeq Analysis Report for ", patientID, "'"),
       "output: pdf_document",
-      'date: "`r Sys.Date()`"',
+      "geometry: margin = 0.6in",
       "header-includes:",
       "   - \\usepackage{multicol}",
       "   - \\usepackage{graphicx}",
       "---",
+      "",
+      paste0("## OvRSeq Analysis Report for ", patientID),
       "",
       "",
       "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
@@ -140,15 +141,15 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\columnbreak",  # Break to the second column
       "",
-      "\\textbf{Patient Values}",
+      "\\vspace{10mm}",
+      "\\textbf{Patient values}",
+      "\\vspace{5mm}",
       "",
       patientTable,  # Add patient information here
       "",
       "\\end{multicols}",  # End first two-column layout
       "",
-      "\\textbf{Molecular markers and TCGA-OV Reference Values}",
-      "",
-      "Marker gene expression levels and respective Q1 and Q3 levels (interquartile range) from the TCGA cohort.",
+      "\\textbf{Molecular markers and TCGA-OV Reference Values}. Marker gene expression levels and respective Q1 and Q3 levels (interquartile range) from the TCGA cohort.",
       "",
       "\\begin{multicols}{2}",  # Start second two-column layout
       "",
