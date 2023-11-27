@@ -1,3 +1,23 @@
+#' Load TCGA Statistics Data
+#'
+#' This function loads the TCGA statistics data from the 'OvRSeq' package. The data is typically used for comparative analysis in the context of high-grade serous ovarian cancer (HGSOC) research.
+#'
+#' @return A data frame containing TCGA statistics.
+#'
+#' @details
+#' The function retrieves the 'tcgaStats' dataset, which includes various statistical measures derived from The Cancer Genome Atlas (TCGA) data. This dataset is crucial for analyzing and comparing patient-specific data against a broader cancer database, facilitating insights into molecular patterns, biomarker distributions, and other critical aspects in HGSOC studies.
+#'
+#' @examples
+#' tcga_stats <- load_tcgaStats()
+#'
+#' @importFrom OvRSeq data
+#' @export
+load_tcgaStats <- function() {
+  data("tcgaStats", package = "OvRSeq")
+  return(tcgaStats)
+
+}
+
 #' Generate OvRSeq Analysis Reports for Patients
 #'
 #' This function generates individual PDF reports for each patient in a given dataset.
@@ -23,7 +43,7 @@
 #' @export
 OvRSeqReport <- function(se, outputDir) {
   # Compute TCGA stats
-  data("tcgaStats", package = "OvRSeq")
+  tcgaStats <- load_tcgaStats()
   tcgaStats$IQR <- paste0(tcgaStats$`Median.50%`," (",tcgaStats$`Q1.25%`,"-",tcgaStats$`Q3.75%`,")")
   # Ensure the output directory exists
   if (!dir.exists(outputDir)) {
