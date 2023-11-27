@@ -168,7 +168,7 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
   # Create a ggplot
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#991915") +
-    theme_bw() + coord_fixed(ratio = 1) +
+    theme_bw() + coord_fixed(ratio = 0.1) +
     ylab("Quantiseq Metric") +
     xlab("") +
     ggtitle("")

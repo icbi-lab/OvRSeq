@@ -78,9 +78,9 @@ OvRSeqReport <- function(se, outputDir) {
     plotFile4 <- tempfile(fileext = ".jpeg")
 
     ggsave(plotFile1, plot = p1, width = 148, height = 148, units = "mm", dpi = 600)
-    ggsave(plotFile2, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
-    ggsave(plotFile3, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
-    ggsave(plotFile4, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
+    ggsave(plotFile2, plot = p2, width = 148, height = 120, units = "mm", dpi = 600)
+    ggsave(plotFile3, plot = p3, width = 148, height = 120, units = "mm", dpi = 600)
+    ggsave(plotFile4, plot = p4, width = 148, height = 120, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
@@ -123,7 +123,7 @@ OvRSeqReport <- function(se, outputDir) {
     # Write Rmd content
     writeLines(con = rmdFile, text = c(
       "---",
-      "title: 'OvRSeq Analysis Report for ", patientID, "'",
+      paste0("title: 'OvRSeq Analysis Report for ", patientID, "'"),
       "output: pdf_document",
       'date: "`r Sys.Date()`"',
       "header-includes:",
@@ -166,11 +166,9 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\columnbreak",  # Break to the second column
       "",
-      "\\textbf{Patient Values}",
-      "",
       paste0("\\includegraphics{", gsub("\n", "", plotFile4), "}"),  # Include the first plot with newline removed
       "",
-      "\\end{multicols}",  # End first two-column layout
+      "\\end{multicols}"  # End first two-column layout
       # ... rest of the report content
     ))
 
