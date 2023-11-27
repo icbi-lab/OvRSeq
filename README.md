@@ -12,8 +12,26 @@ OvRseq has dependencies on packages outside CRAN. Please make sure you install t
 
 
 ```
-BiocManager::install("consensusOV")
-BiocManager::install("ensembldb")
+# List of packages to be installed
+packages <- c("consensusOV", "ensembldb", "org.Hs.eg.db", "IRanges", "biomaRt", 
+              "AnnotationDbi", "GSVA", "S4Vectors", "SummarizedExperiment")
+
+# Install BiocManager if it is not already installed
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+
+# Loop through the list of packages and install each one
+for (pkg in packages) {
+    BiocManager::install(pkg)
+}
+
+```
+
+Install packages from github repository.
+
+```
+devtools::install_github("omnideconv/immunedeconv")
 ```
 
 ## Installation

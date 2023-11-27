@@ -58,6 +58,7 @@ OvRSeqReport <- function(se, outputDir) {
   # Iterate over each patient/sample in se
   patientIDs <- rownames(colData(se))
   for (patientID in patientIDs) {
+    cat(paste0("[+] Creating report for: ", patientID))
     # Extract patient data
     patientColData <- colData(se)[patientID,]
     vector_genes <- c("CD274", "GZMB", "PRF1", "C1QA","CD8A", "IDO1", "FOXP3",
@@ -68,12 +69,18 @@ OvRSeqReport <- function(se, outputDir) {
     #PLot
     p1 <- plot_vulnerabilitymap(se[,patientID])
     p2 <- plot_ggmarginal_sample(se[,patientID],color_var = "BRCAness")
+    p3 <- plot_immune_signature_one_sample(se, patientID)
+    p4 <- plot_quantiseq_one_sample(se, patientID)
     # Create a temporary file for the plot
     plotFile1 <- tempfile(fileext = ".jpeg")
     plotFile2 <- tempfile(fileext = ".jpeg")
+    plotFile3 <- tempfile(fileext = ".jpeg")
+    plotFile4 <- tempfile(fileext = ".jpeg")
 
     ggsave(plotFile1, plot = p1, width = 148, height = 148, units = "mm", dpi = 600)
     ggsave(plotFile2, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
+    ggsave(plotFile3, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
+    ggsave(plotFile4, plot = p2, width = 148, height = 148, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
@@ -124,9 +131,8 @@ OvRSeqReport <- function(se, outputDir) {
       "   - \\usepackage{graphicx}",
       "---",
       "",
-      paste0("## OvRSeq Analysis Results for Patient: ", patientID),
       "",
-      "The report starts with a Vulnerability Map highlighting HGSOC aspects, including BRCAness Status, Infiltration Status, and Tumor Molecular Subtypes, setting the stage for a personalized molecular analysis.",
+      "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
       "",
       "\\begin{multicols}{2}",  # Start first two-column layout
       "",
@@ -142,7 +148,7 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\textbf{Molecular markers and TCGA-OV Reference Values}",
       "",
-      "This report section compares the patient's molecular markers with TCGA interquartile ranges (IQR). The table includes key markers like Immuno Phenoscore and CYT to C1QA ratio, crucial for personalized cancer profiling and treatment.",
+      "Marker gene expression levels and respective Q1 and Q3 levels (interquartile range) from the TCGA cohort.",
       "",
       "\\begin{multicols}{2}",  # Start second two-column layout
       "",
@@ -153,7 +159,18 @@ OvRSeqReport <- function(se, outputDir) {
       referenceTable,  # Add reference table here
       "",
       "\\end{multicols}",  # End second two-column layout
-      ""
+      "",
+      "\\begin{multicols}{2}",  # Start first two-column layout
+      "",
+      paste0("\\includegraphics{", gsub("\n", "", plotFile3), "}"),  # Include the first plot with newline removed
+      "",
+      "\\columnbreak",  # Break to the second column
+      "",
+      "\\textbf{Patient Values}",
+      "",
+      paste0("\\includegraphics{", gsub("\n", "", plotFile4), "}"),  # Include the first plot with newline removed
+      "",
+      "\\end{multicols}",  # End first two-column layout
       # ... rest of the report content
     ))
 

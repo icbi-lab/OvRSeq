@@ -58,5 +58,12 @@ run_test <- function(){
   se <- load_TCGA_OV()
   se <- TCGA_OV
   se <- OvRSeq(se, normalize = F)
+  p1 <- OvRSeq::plot_vulnerabilitymap(se)
+  p2 <- plot_ggmarginal(se, x_var = "CD8A" , y_var =  "C1QA" , color_var = "BRCAness")
+  p3 <- plot_quantiseq_one_sample(se, sample_id = "TCGA-04-1341")
+  p4 <- plot_immune_signature_one_sample(se, sample_id = "TCGA-04-1341")
 
 }
+
+
+

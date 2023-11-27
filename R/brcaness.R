@@ -196,3 +196,46 @@ BRCAness_immunotype <- function(se){
 }
 
 
+
+### In development
+train_rf_with_common_genes <- function(se, brcaness_signature, tcga_ov) {
+  # Check if 'se' is a SummarizedExperiment object
+  if (!inherits(se, "SummarizedExperiment")) {
+    stop("Input 'se' must be a SummarizedExperiment object.")
+  }
+
+  # Check if all genes in the signature are present in 'se'
+  common_genes <- intersect(rownames(assay(se)), brcaness_signature)
+
+  # If not all genes are present, warn the user and use the common genes
+  if (length(common_genes) != length(brcaness_signature)) {
+    warning("Not all genes in the BRCAness signature are present. Using common genes to train the model.")
+  }
+
+  # Prepare the training data from TCGA_OV
+  training_data <- assay(tcga_ov)[common_genes, ]
+  training_labels <- colData(tcga_ov)[["BRCAness"]]
+
+  # Check if there are any missing labels and remove corresponding data
+  na_indices <- which(is.na(training_labels))
+  if (length(na_indices) > 0) {
+    training_data <- training_data[, -na_indices]
+    training_labels <- training_labels[-na_indices]
+  }
+
+  # Convert labels to factor
+  training_labels <- factor(training_labels, levels = c(0, 1))
+
+  # Load required package for random forest
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    install.packages("caret")
+    library(caret)
+  }
+
+  # Train the random forest model
+  set.seed(42) # For reproducibility
+  rf_model <- caret::train(t(training_data), training_labels, method = "rf", metric = "Accuracy")
+
+  return(rf_model)
+}
+

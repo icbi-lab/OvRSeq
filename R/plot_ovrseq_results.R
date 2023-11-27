@@ -168,8 +168,64 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
   # Create a ggplot
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#991915") +
-    theme_bw() +
+    theme_bw() + coord_fixed(ratio = 1) +
     ylab("Quantiseq Metric") +
+    xlab("") +
+    ggtitle("")
+
+  return(p)
+}
+
+#' Plot Immune Signature Scores for a Single Sample
+#'
+#' This function generates a bar plot of selected immune signature scores for a specified sample from a `SummarizedExperiment` object. It filters the data to include specific immune-related metrics and presents them with meaningful names.
+#'
+#' @param se A `SummarizedExperiment` object containing immune-related metrics in its `colData`.
+#' @param sample_id A character string specifying the ID of the sample to be plotted.
+#'
+#' @return A `ggplot` object representing the bar plot of immune signature scores for the specified sample.
+#'
+#' @details
+#' The function extracts data for the given `sample_id` and selects a subset of columns related to immune signatures. These columns are renamed for better readability in the plot. The data is then transformed into a long format suitable for plotting with `ggplot2`. The bar plot visualizes the immune pathway or signature scores, differentiated by the analysis type (Average or GSVA) in separate facets.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' sample_id <- "sample123"
+#' plot_immune_signature_one_sample(se, sample_id)
+#'
+#' @importFrom SummarizedExperiment colData
+#' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle
+#' @export
+plot_immune_signature_one_sample <- function(se, sample_id) {
+  if (!sample_id %in% rownames(colData(se))) {
+    stop("Specified sample_id not found in SummarizedExperiment object.")
+  }
+
+  # Extract data for the specified sample
+  data <- colData(se)[sample_id, ]
+
+  # Filter for columns containing "quantiseq"
+  sign_columns <- c("IFNG Ayers", "INFLAM Spranger" ,"BRCAness_pos", "BRCAness_neg",
+                    "CD8 Jiang", "T_EXCL Jerby-Anon","IFNA_response","ICR")
+
+  nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
+                 "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
+  data <- data[sign_columns]
+  colnames(data) <- nice_name
+
+  # Transform 'quantiseq_data' into a format suitable for plotting
+  plot_data <- as.data.frame(t(data))
+  colnames(plot_data) <- c("Row","group_name", "value" )
+  plot_data$Metric <- plot_data$group_name
+  plot_data$Analysis <- unlist(lapply(plot_data$Metric, function(x){
+    ifelse(x %in% c("T cell exhaustion","IFNG"), "Average","GSVA")}))
+
+  # Create a ggplot
+  p <- ggplot(plot_data, aes(x = value, y = Metric)) +
+    geom_bar(stat = "identity", color = "black", fill ="#175d92") +
+    facet_grid(~Analysis,scales = "free") +
+    theme_bw()  +
+    ylab("Immune pathway/signature scores") +
     xlab("") +
     ggtitle("")
 
