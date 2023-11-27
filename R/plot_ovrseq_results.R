@@ -127,3 +127,51 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
   return(p)
 }
 
+#' Plot QuanTIseq Metrics for a Specific Sample
+#'
+#' This function creates a bar plot of QuanTIseq metrics for a specified sample from a `SummarizedExperiment` object. It filters and plots only those metrics that are related to QuanTIseq.
+#'
+#' @param se A `SummarizedExperiment` object containing quantiseq-related metrics in its `colData`.
+#' @param sample_id A character string specifying the ID of the sample to be plotted.
+#'
+#' @return A `ggplot` object representing the bar plot of QuanTIseq metrics for the specified sample.
+#'
+#' @details
+#' The function first checks if the specified `sample_id` is present in the `colData` of the `SummarizedExperiment` object. It then filters the data to include only those columns that contain the term "quantiseq" (case-insensitive). A bar plot is created using this filtered data, providing a visual representation of the QuanTIseq metrics for the chosen sample.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' sample_id <- "sample123"
+#' plot_quantiseq_one_sample(se, sample_id)
+#'
+#' @importFrom SummarizedExperiment colData
+#' @importFrom ggplot2 ggplot aes geom_bar theme_minimal xlab ylab ggtitle
+#' @export
+plot_quantiseq_one_sample <- function(se, sample_id) {
+  if (!sample_id %in% rownames(colData(se))) {
+    stop("Specified sample_id not found in SummarizedExperiment object.")
+  }
+
+  # Extract data for the specified sample
+  data <- colData(se)[sample_id, ]
+
+  # Filter for columns containing "quantiseq"
+  quantiseq_columns <- grepl("quantiseq", names(data), ignore.case = TRUE)
+  quantiseq_data <- data[quantiseq_columns]
+
+  # Transform 'quantiseq_data' into a format suitable for plotting
+  plot_data <- as.data.frame(t(quantiseq_data))
+  colnames(plot_data) <- "Value"
+  plot_data$Metric <- rownames(plot_data)
+
+  # Create a ggplot
+  p <- ggplot(plot_data, aes(x = Metric, y = Value)) +
+    geom_bar(stat = "identity", color ="#991915") +
+    theme_minimal() +
+    xlab("Quantiseq Metric") +
+    ylab("Value") +
+    ggtitle(paste("Quantiseq Metrics for Sample", sample_id))
+
+  return(p)
+}
+

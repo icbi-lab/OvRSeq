@@ -10,7 +10,6 @@
 #' @examples
 #' tcga_stats <- load_tcgaStats()
 #'
-#' @importFrom OvRSeq data
 #' @export
 load_tcgaStats <- function() {
   data("tcgaStats", package = "OvRSeq")
