@@ -85,7 +85,7 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
 #' plot_ggmarginal(se, "C1QA", "CD8A", "BRCAness_Prob")
 #'
 #' @importFrom SummarizedExperiment colData assay
-#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw guides guide_legend
+#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw guides guide_legend scale_y_discrete
 #' @importFrom ggExtra ggMarginal
 #' @export
 plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var = "BRCAness") {
@@ -149,7 +149,7 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
 #' plot_quantiseq_one_sample(se, sample_id)
 #'
 #' @importFrom SummarizedExperiment colData
-#' @importFrom ggplot2 ggplot aes geom_bar theme_minimal xlab ylab ggtitle
+#' @importFrom ggplot2 ggplot aes geom_bar theme_minimal xlab ylab ggtitle scale_y_discrete
 #' @importFrom stringr str_wrap
 #' @export
 plot_quantiseq_one_sample <- function(se, sample_id) {
@@ -200,7 +200,7 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
 #' plot_immune_signature_one_sample(se, sample_id)
 #'
 #' @importFrom SummarizedExperiment colData
-#' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle
+#' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle scale_y_discrete
 #' @importFrom stringr str_wrap
 #' @export
 plot_immune_signature_one_sample <- function(se, sample_id) {
