@@ -181,15 +181,30 @@ BRCAness_immunotype <- function(se){
 
   # Compute immunotype based on existing or computed data
   data <- colData(se)
-  immunotype <- apply(data, 1, function(sample){
-    if (sample$BRCAness == 1 && sample$InfiltrationStatus == "Infiltrated" && sample$Tumor_Molecular_Subtypes == "IMR_consensus") {
-      return("BRIT")
-    } else if (sample$BRCAness  == 1 && sample$InfiltrationStatus != "Infiltrated" && sample$Tumor_Molecular_Subtypes != "IMR_consensus") {
-      return("noBRIT")
+  # Initialize an empty vector to store the immunotype for each sample
+  immunotype <- vector("character", nrow(data))
+
+  # Iterate over each row of the data
+  for (i in 1:nrow(data)) {
+    # Access each sample's data
+    sample <- data[i, ]
+
+    # Convert to character for string comparison
+    # Convert to character for string comparison
+    BRCAness <- as.character(sample["BRCAness"][[1]])
+    InfiltrationStatus <- as.character(sample["InfiltrationStatus"][[1]])
+    Tumor_Molecular_Subtypes <- as.character(sample["Tumor_Molecular_Subtypes"][[1]])
+    # Compute the immunotype based on conditions
+    if (BRCAness == "1" && InfiltrationStatus == "Infiltrated" && Tumor_Molecular_Subtypes == "IMR_consensus") {
+      immunotype[i] <- "BRIT"
+    } else if (BRCAness == "1" && InfiltrationStatus != "Infiltrated" && Tumor_Molecular_Subtypes != "IMR_consensus") {
+      immunotype[i] <- "noBRIT"
     } else {
-      return("other")
+      immunotype[i] <- "other"
     }
-  })
+  }
+
+
   colData(se)$BRCAness_immunotype <- immunotype
   cat("Classification complete:  samples were classified for BRCAness immunotype\n")
   return(se)

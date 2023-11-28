@@ -260,7 +260,7 @@ compute_angiogenesis_score <- function(se) {
 
 
   # Add the angiogenesis score to colData
-  colData(se)$angiogenesis_score <- angiogenesis_score
+  colData(se)$angiogenesis_score <- unlist(angiogenesis_score)
   cat("The angiogenesis_score have been successfully computed and added to the dataset.\n")
 
   return(se)
