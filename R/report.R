@@ -31,8 +31,8 @@ load_tcgaStats <- function() {
 #'
 #'@importFrom knitr kable
 #'@importFrom ggplot2 ggsave
+#'@importFrom stringr str_remove
 #'@import dplyr
-#'
 #'
 #' @examples
 #' # Assuming 'se' is your sample
@@ -43,7 +43,11 @@ load_tcgaStats <- function() {
 OvRSeqReport <- function(se, outputDir) {
   # Compute TCGA stats
   tcgaStats <- load_tcgaStats()
-  tcgaStats$IQR <- paste0(tcgaStats$`Median.50%`," (",tcgaStats$`Q1.25%`,"-",tcgaStats$`Q3.75%`,")")
+  tcgaStats$IQR <- sprintf("%.2f (%.2f-%.2f)",
+                           tcgaStats$`Median.50%`,
+                           tcgaStats$`Q1.25%`,
+                           tcgaStats$`Q3.75%`)
+
   # Ensure the output directory exists
   if (!dir.exists(outputDir)) {
     dir.create(outputDir, recursive = TRUE)
@@ -78,7 +82,7 @@ OvRSeqReport <- function(se, outputDir) {
     plotFile4 <- tempfile(fileext = ".jpeg")
 
     ggsave(plotFile1, plot = p1, width = 148, height = 100, units = "mm", dpi = 600)
-    ggsave(plotFile2, plot = p2, width = 148, height = 100, units = "mm", dpi = 600)
+    ggsave(plotFile2, plot = p2, width = 120, height = 100, units = "mm", dpi = 600)
     ggsave(plotFile3, plot = p3, width = 148, height = 100, units = "mm", dpi = 600)
     ggsave(plotFile4, plot = p4, width = 148, height = 100, units = "mm", dpi = 600)
 
@@ -88,15 +92,15 @@ OvRSeqReport <- function(se, outputDir) {
       "\\hline",  # Horizontal line
       "Feature & Value \\\\",  # Table header
       "\\hline",  # Horizontal line
-      paste0("BRCAness Status & ", patientData$BRCAness," (", patientData$BRCAness_Prob,")", " \\\\"),  # Row for BRCAness Status
+      sprintf("BRCAness status & %s (%.2f) \\\\", patientData$BRCAness, patientData$BRCAness_Prob),
       #"\\hline",  # Horizontal line
-      paste0("Infiltration Status & ", patientData$InfiltrationStatus,  " \\\\"),  # Row for Infiltration Status
+      paste0("Infiltration status & ", patientData$InfiltrationStatus,  " \\\\"),  # Row for Infiltration Status
       #"\\hline",  # Horizontal line
-      paste0("Molecular Subtypes & ", escapeUnderscores(patientData$Tumor_Molecular_Subtypes),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Molecular subtypes & ", str_remove(escapeUnderscores(patientData$Tumor_Molecular_Subtypes), "consensus"),  " \\\\"),  # Row for Tumor Molecular Subtypes
       paste0("BRCAness immunotype & ", patientData$BRCAness_immunotype,  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("Vulnerability Score & ", round(patientData$Vulnerability_Score,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("Immuno Phenoscore & ", round(patientData$IPS,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("CYT to C1QA Ratio (C2C) & ", round(patientData$mapped_ratio_CYT_C1QA,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      sprintf("Vulnerability score & %.2f \\\\", patientData$Vulnerability_Score),
+      paste0("Immuno phenoscore & ", patientData$IPS,  " \\\\"),  # Row for Tumor Molecular Subtypes
+      sprintf("CYT to C1QA ratio (C2C) & %.2f \\\\", patientData$mapped_ratio_CYT_C1QA),
       paste0("Angiogenesis Score & ", "",  " \\\\"),  # Row for Tumor Molecular Subtypes
 
       "\\hline",  # Horizontal line
@@ -109,8 +113,8 @@ OvRSeqReport <- function(se, outputDir) {
       "Feature & Patient Value & TCGA IQR \\\\",  # Table header
       "\\hline",  # Horizontal line
       paste(sapply(vector_genes, function(gene) {
-          paste0(gene, " & ", round(patientData[[gene]], 3), " & ", tcgaStats[gene, "IQR"], " \\\\")
-        }
+        sprintf("%s & %.2f & %s \\\\", gene, patientData[[gene]], tcgaStats[gene, "IQR"])
+      }
       ), collapse = "\n"),
       "\\hline",  # Horizontal line
       "\\end{tabular}",
@@ -131,7 +135,9 @@ OvRSeqReport <- function(se, outputDir) {
       "---",
       "",
       paste0("## OvRSeq Analysis Report for ", patientID),
+      "",
       as.character(Sys.Date()),
+      "\\vspace{5mm}",
       "",
       "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
       "",
@@ -161,6 +167,8 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\end{multicols}",  # End second two-column layout
       "",
+      "\\textbf{Marker immune signatures and pathway scores and quantified immune cell infiltrates}, integrating GSVA-derived metrics and quanTIseq estimations for a detailed immunological profile.",
+      "",
       "\\begin{multicols}{2}",  # Start first two-column layout
       "",
       paste0("\\includegraphics{", gsub("\n", "", plotFile3), "}"),  # Include the first plot with newline removed
@@ -170,10 +178,7 @@ OvRSeqReport <- function(se, outputDir) {
       paste0("\\includegraphics{", gsub("\n", "", plotFile4), "}"),  # Include the first plot with newline removed
       "",
       "\\end{multicols}"  # End first two-column layout
-      # ... rest of the report content
     ))
-
-
 
     # Render the Rmd file to PDF
     outputFilePath <- file.path(outputDir, paste0("OvRSeqReport_", patientID, ".pdf"))
@@ -182,8 +187,8 @@ OvRSeqReport <- function(se, outputDir) {
     # Optionally, delete the temporary plot file
     unlink(plotFile1)
     unlink(plotFile2)
+    unlink(plotFile3)
+    unlink(plotFile4)
+
   }
 }
-
-# ... following code ...
-

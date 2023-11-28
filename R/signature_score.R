@@ -19,7 +19,7 @@ immune_signature_score <- function(se, method = "ssgsea", genelist ){
   results <- gsva(count_data,
                  genelist,
                  method = 'ssgsea',
-                 ssgsea.norm=FALSE)
+                 ssgsea.norm=F)
   # Create a success message
   success_message <- "Enrichment scores for immune signatures computed successfully."
 
@@ -163,7 +163,7 @@ computeVulnerabilityScore <- function(se){
 
   mapping <- function(x) {
     v = x
-    w = 1/(1+exp(-(pi*(x-(mean_C2C)/(sd_C2C)))))
+    w = 1/(1+exp(-((x-mean_C2C)/(sd_C2C/pi))))
     return(w)
   }
 

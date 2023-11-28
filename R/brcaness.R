@@ -182,9 +182,9 @@ BRCAness_immunotype <- function(se){
   # Compute immunotype based on existing or computed data
   data <- colData(se)
   immunotype <- apply(data, 1, function(sample){
-    if (sample["BRCAness"] == 1 && sample["InfiltrationStatus"] == "Infiltrated" && sample["Tumor_Molecular_Subtypes"] == "IMR_consensus") {
+    if (sample$BRCAness == 1 && sample$InfiltrationStatus == "Infiltrated" && sample$Tumor_Molecular_Subtypes == "IMR_consensus") {
       return("BRIT")
-    } else if (sample["BRCAness"] == 1 && sample["InfiltrationStatus"] != "Infiltrated" && sample["Tumor_Molecular_Subtypes"] != "IMR_consensus") {
+    } else if (sample$BRCAness  == 1 && sample$InfiltrationStatus != "Infiltrated" && sample$Tumor_Molecular_Subtypes != "IMR_consensus") {
       return("noBRIT")
     } else {
       return("other")

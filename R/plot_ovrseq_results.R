@@ -51,8 +51,11 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
   # Add theme
   p <- p + theme_bw() #+ coord_fixed(ratio = 1.5)
 
+
   # Add marginal histograms
   if (!is.na(color_var)){
+    p <- p + theme(legend.position = "bottom") +
+      guides(color=guide_legend(nrow=1, byrow=TRUE))
     p <- ggMarginal(p, type="histogram", groupColour=TRUE, groupFill=TRUE)
   } else {
     p <- ggMarginal(p, type="histogram", groupColour=F, groupFill=F)
@@ -217,7 +220,7 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
                     "Immunological Constant of Rejection (ICR)")
 
   nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
-                 "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
+                  "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
   data <- data[sign_columns]
   colnames(data) <- nice_name
 
