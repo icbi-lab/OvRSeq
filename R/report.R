@@ -101,7 +101,7 @@ OvRSeqReport <- function(se, outputDir) {
       sprintf("Vulnerability score & %.2f \\\\", patientData$Vulnerability_Score),
       paste0("Immuno phenoscore & ", patientData$IPS,  " \\\\"),  # Row for Tumor Molecular Subtypes
       sprintf("CYT to C1QA ratio (C2C) & %.2f \\\\", patientData$mapped_ratio_CYT_C1QA),
-      paste0("Angiogenesis Score & ", "",  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Angiogenesis Score & ", round(patientData$angiogenesis_score,0),  " \\\\"),  # Row for Tumor Molecular Subtypes
 
       "\\hline",  # Horizontal line
       "\\end{tabular}",

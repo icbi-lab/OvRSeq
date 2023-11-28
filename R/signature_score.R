@@ -180,3 +180,88 @@ computeVulnerabilityScore <- function(se){
 
   return(se)
 }
+
+#' Compute Angiogenesis Score for SummarizedExperiment Data
+#'
+#' Calculates an angiogenesis score based on expression levels of seven angiogenic genes. This score ranges from 0 to 3 and is added to the `colData` of the `SummarizedExperiment` object.
+#'
+#' @param se `SummarizedExperiment` object containing the necessary gene expression data.
+#' @param sample_id The identifier for the sample to compute the score.
+#' @return `SummarizedExperiment` object with the new `angiogenesis_score` column added to its `colData`.
+#'
+#' @details
+#' The function evaluates the expression of VEGFA, VEGFR2, PDGFA, PDGFB, PDGFRA, PDGFRB, and KIT.
+#' It dichotomizes these based on a predefined threshold and calculates a score:
+#' - 0 for 0 genes with high expression
+#' - 1 for 1-3 genes with high expression
+#' - 2 for 4-5 genes with high expression
+#' - 3 for 6-7 genes with high expression
+#' This score is indicative of the angiogenic potential of the tumor and has been linked to patient prognosis and response to angiogenesis inhibitors like bevacizumab.
+#'
+#' @references
+#' Wieser V, Tsibulak I, Reimer DU, Zeimet AG, Fiegl H, Hackl H, Marth C. An angiogenic tumor phenotype
+#' predicts poor prognosis in ovarian cancer. Gynecol Oncol. 2023 Mar;170:290-299.
+#' doi: 10.1016/j.ygyno.2023.01.034. Epub 2023 Feb 7. PMID: 36758419.
+#'
+#' @examples
+#' # se is a pre-loaded SummarizedExperiment object
+#' sample_id <- "sample123"
+#' se <- compute_angiogenesis_score(se, sample_id)
+#'
+#' @importFrom SummarizedExperiment colData assay
+#' @export
+compute_angiogenesis_score <- function(se) {
+  required_genes <- c("VEGFA", "VEGFR2","KDR", "PDGFA", "PDGFB", "PDGFRA", "PDGFRB", "KIT")
+  gene_thresholds <- list(
+    VEGFA = 7.969714,
+    VEGFR2 = 2.560207,
+    KDR = 2.560207,
+    PDGFA = 3.424363,
+    PDGFB = 4.476959,
+    PDGFRA = 3.695786,
+    PDGFRB = 4.431066,
+    KIT = 0.83184
+  )
+
+  # Extract the expression data for the required genes
+  expr_data <- assay(se)
+  required_genes <- intersect(rownames(expr_data), required_genes)
+  if (length(required_genes) < 7 ) {
+    warning("Some genes required for the angiogenesis signature are missing. The computed score may lack accuracy and should be interpreted with caution.")
+
+  }
+  expr_data <- expr_data[required_genes,]
+
+
+  # Apply the score criteria based on expression levels
+  number_of_high_exprs_gene <- apply(expr_data, 2, function(sample_expr) {
+    sum(sapply(names(sample_expr), function(gene_name) {
+      if (gene_name %in% names(gene_thresholds)) {
+        sample_expr[gene_name] > gene_thresholds[[gene_name]]
+      } else {
+        warning(paste("Gene", gene_name, "not found in threshold list. Skipping this gene."))
+        FALSE
+      }
+    }))
+  })
+  angiogenesis_score <- lapply(number_of_high_exprs_gene, function(x){
+    if (x==0) {
+      return(0)
+    } else if (x > 0 && x < 4){
+      return(1)
+    } else if (x >= 4 && x < 6){
+      return(2)
+    } else if (x >= 6) {
+      return(3)
+    } else {
+    return(NA)
+    }
+})
+
+
+  # Add the angiogenesis score to colData
+  colData(se)$angiogenesis_score <- angiogenesis_score
+  cat("The angiogenesis_score have been successfully computed and added to the dataset.\n")
+
+  return(se)
+}

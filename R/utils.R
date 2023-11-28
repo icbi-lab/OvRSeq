@@ -30,3 +30,50 @@ calculateTcgaStats <- function(tcgaData) {
   usethis::use_data(tcgaStats, overwrite = T)
   return(statsDf)
 }
+
+
+
+load_and_compute_thresholds <- function() {
+
+  # Load the TCGA data
+  se <- TCGA_OV
+  data <- t(assay(se))
+
+  # Extract survival columns
+  SURV_TIME <- se$OS_MONTHS  # or the correct column name for survival time
+  SURV_EVENT <- se$OS        # or the correct column name for survival event
+
+  # Define the genes of interest
+  genes_of_interest <- c("VEGFA", "KDR", "PDGFA", "PDGFB", "PDGFRA", "PDGFRB", "KIT")
+
+  # Initialize a list to store thresholds
+  thresholds <- list()
+
+  # Compute the threshold for each gene using cutpointr
+  for (gene in genes_of_interest) {
+    if (gene %in% colnames(data)) {
+      # Select the gene expression data and the survival data, removing missing values
+
+
+      # Use cutpointr to compute the optimal threshold
+      optimal_cut <- cutpointr(
+        data[,gene],
+        SURV_EVENT,
+        pos_class = 1,
+        neg_class = 0,
+        method = maximize_metric,
+        metric = youden,
+        na.rm = T)  # adjust by parameter as needed
+
+
+      # Store the threshold
+      thresholds[[gene]] <- optimal_cut$optimal_cutpoint
+    } else {
+      warning(paste("Gene", gene, "not found in TCGA data."))
+    }
+  }
+
+  # Return the list of thresholds
+  return(thresholds)
+}
+

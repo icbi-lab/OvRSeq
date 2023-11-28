@@ -17,7 +17,7 @@ test <- function(){
 }
 
 test_data <- function(){
-  all_data <- read.csv("../../data/Matrix_log2tpm.csv", check.names = F, row.names = 1)
+  all_data <- read.csv("/data/projects/2020/OvarianCancerHH/OV_R_package/data/Matrix_log2tpm.csv", check.names = F, row.names = 1)
   lCol_data <- c("AGE","TUMOR_GRADE","CLINICAL_STAGE","TUMOR_RESIDUAL_DISEASE","BRCAness")
 
   OV <- read.csv("../data/TCGA-OV_RNASeq_raw.csv", check.names = F, row.names = 1)

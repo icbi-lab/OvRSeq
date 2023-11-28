@@ -131,6 +131,15 @@ OvRSeq <- function(se, normalize = FALSE){
     warning(paste("Error in computing the computeVulnerabilityScore", ":", e$message))
   })
 
+  #Compute compute_angiogenesis_score
+  tryCatch({
+    se <- compute_angiogenesis_score(se)
+  }, warning = function(w) {
+    warning(paste("Warning in computing the compute_angiogenesis_score", ":", w$message))
+  }, error = function(e) {
+    warning(paste("Error in computing the compute_angiogenesis_score", ":", e$message))
+  })
+
   # Remove specified objects from the global environment
   objs_to_remove <- c("brcaness_classifier", "classifier_infiltration",
                       "immune_signatures", "IPS_genes",
