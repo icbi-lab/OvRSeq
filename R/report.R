@@ -84,7 +84,7 @@ OvRSeqReport <- function(se, outputDir) {
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
-      "\\begin{tabular}{cc}",  # Define the table with 2 columns
+      "\\begin{tabular}{ll}",  # Define the table with 2 columns
       "\\hline",  # Horizontal line
       "Feature & Value \\\\",  # Table header
       "\\hline",  # Horizontal line
@@ -96,7 +96,7 @@ OvRSeqReport <- function(se, outputDir) {
       paste0("BRCAness immunotype & ", patientData$BRCAness_immunotype,  " \\\\"),  # Row for Tumor Molecular Subtypes
       paste0("Vulnerability Score & ", round(patientData$Vulnerability_Score,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
       paste0("Immuno Phenoscore & ", round(patientData$IPS,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("CYT to C1QA Ratio & ", round(patientData$mapped_ratio_CYT_C1QA,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("CYT to C1QA Ratio (C2C) & ", round(patientData$mapped_ratio_CYT_C1QA,3),  " \\\\"),  # Row for Tumor Molecular Subtypes
       paste0("Angiogenesis Score & ", "",  " \\\\"),  # Row for Tumor Molecular Subtypes
 
       "\\hline",  # Horizontal line
@@ -131,7 +131,7 @@ OvRSeqReport <- function(se, outputDir) {
       "---",
       "",
       paste0("## OvRSeq Analysis Report for ", patientID),
-      "",
+      as.character(Sys.Date()),
       "",
       "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
       "",

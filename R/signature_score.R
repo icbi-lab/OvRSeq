@@ -68,7 +68,7 @@ avg_expression_for_signature_se <- function(se, gmt) {
     avg_expression <- colMeans(expression_genes, na.rm = TRUE)
 
     # Add this to colData of the SummarizedExperiment
-    colData(se)[[signature_name]] <- avg_expression
+    colData(se)[[paste0(signature_name,"_average")]] <- avg_expression
   }
   cat("The short immune signatures have been successfully computed and added to the dataset.\n")
 

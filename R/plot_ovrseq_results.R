@@ -9,7 +9,7 @@
 #' @param y_var The name of the variable in colData(se) to use for the y-axis.
 #' @param color_var The name of the variable in colData(se) to use for coloring the points.
 #' @return A ggplot object with added marginal histograms.
-#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw
+#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw guides guide_legend
 #' @importFrom ggExtra ggMarginal
 #' @importFrom rlang sym
 #' @examples
@@ -85,7 +85,7 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
 #' plot_ggmarginal(se, "C1QA", "CD8A", "BRCAness_Prob")
 #'
 #' @importFrom SummarizedExperiment colData assay
-#' @importFrom ggplot2 ggplot aes_string geom_point theme
+#' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw guides guide_legend
 #' @importFrom ggExtra ggMarginal
 #' @export
 plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var = "BRCAness") {
