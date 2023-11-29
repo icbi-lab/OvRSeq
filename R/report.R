@@ -128,7 +128,7 @@ OvRSeqReport <- function(se, outputDir) {
     writeLines(con = rmdFile, text = c(
       "---",
       "output: pdf_document",
-      "geometry: margin = 0.6in",
+      "geometry: margin = 0.5in",
       "header-includes:",
       "   - \\usepackage{multicol}",
       "   - \\usepackage{graphicx}",
@@ -137,7 +137,7 @@ OvRSeqReport <- function(se, outputDir) {
       paste0("## OvRSeq Analysis Report for ", patientID),
       "",
       as.character(Sys.Date()),
-      "\\vspace{5mm}",
+      "\\vspace{2mm}",
       "",
       "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
       "",
