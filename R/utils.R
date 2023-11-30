@@ -4,6 +4,7 @@ calculateTcgaStats <- function(tcgaData) {
   }
 
   # Extract colData
+  load_TCGA_OV()
   TCGA_OV <- OvRSeq(TCGA_OV, normalize = F)
   TCGA_OV <- computeCytC1qaRatio(TCGA_OV)
   tcgaColData <- colData(TCGA_OV)
@@ -15,16 +16,21 @@ calculateTcgaStats <- function(tcgaData) {
   numericCols <- sapply(tcgaColData, is.numeric)
   tcgaColData <- tcgaColData[, numericCols]
 
-  # Calculate median, 25th percentile (Q1), and 75th percentile (Q3) for each column
+  # Calculate median, 25th percentile (Q1), 75th percentile (Q3), minimum (Min), and maximum (Max) for each column
   stats <- t(apply(tcgaColData, 2, function(x) {
     quantiles <- quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
-    c(Q1 = round(quantiles[1],3), Median = round(quantiles[2],3), Q3 = round(quantiles[3],3))
+    minVal <- min(x, na.rm = TRUE)
+    maxVal <- max(x, na.rm = TRUE)
+    c(Q1 = round(quantiles[1],3), Median = round(quantiles[2],3), Q3 = round(quantiles[3],3), Min = round(minVal,3), Max = round(maxVal,3))
   }))
 
+
   # Convert to data frame
+  Feature <- rownames(stats)
   statsDf <- as.data.frame(stats)
-  rownames(statsDf) <- NULL
-  statsDf$Feature <- colnames(tcgaColData)
+  statsDf$Feature <-  Feature
+  # Keep only unique rows based on the Feature column
+  statsDf <- statsDf[!duplicated(statsDf$Feature),]
   rownames(statsDf) <- statsDf$Feature
   tcgaStats <- statsDf
   usethis::use_data(tcgaStats, overwrite = T)

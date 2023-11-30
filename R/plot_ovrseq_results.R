@@ -213,6 +213,7 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
 
   # Extract data for the specified sample
   data <- colData(se)[sample_id, ]
+  tcgaStats <- load_tcgaStats()
 
   # Filter for columns containing "quantiseq"
   sign_columns <- c("IFNG_Ayers", "Inflamed" ,"BRCAness_pos", "BRCAness_neg",
@@ -222,11 +223,23 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
                   "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
   data <- data[sign_columns]
-  colnames(data) <- nice_name
+  tcgaStats <- tcgaStats[sign_columns,]
+  #colnames(data) <- nice_name
+  # Perform min-max normalization using lapply
+  normalizedData <- as.data.frame(lapply(names(data), function(col) {
+    minVal <- tcgaStats[tcgaStats$Feature == col, "Min"]
+    maxVal <- tcgaStats[tcgaStats$Feature == col, "Max"]
+
+    (data[[col]] - minVal) / (maxVal - minVal)
+  }))
+
+  # Set the row names to match the original data
+  colnames(normalizedData) <- colnames(data)
 
   # Transform 'quantiseq_data' into a format suitable for plotting
-  plot_data <- as.data.frame(t(data))
-  colnames(plot_data) <- c("Row","group_name", "value" )
+  plot_data <- as.data.frame(t(normalizedData))
+  plot_data$group_name <- rownames(plot_data)
+  colnames(plot_data) <- c( "value","group_name" )
   plot_data$Metric <- plot_data$group_name
   #plot_data$Analysis <- unlist(lapply(plot_data$Metric, function(x){
   #  ifelse(x %in% c("T cell exhaustion","IFNG"), "Average","GSVA")}))
