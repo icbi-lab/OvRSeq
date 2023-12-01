@@ -82,9 +82,9 @@ OvRSeqReport <- function(se, outputDir) {
     plotFile4 <- tempfile(fileext = ".jpeg")
 
     ggsave(plotFile1, plot = p1, width = 148, height = 100, units = "mm", dpi = 600)
-    ggsave(plotFile2, plot = p2, width = 120, height = 100, units = "mm", dpi = 600)
-    ggsave(plotFile3, plot = p3, width = 148, height = 100, units = "mm", dpi = 600)
-    ggsave(plotFile4, plot = p4, width = 148, height = 100, units = "mm", dpi = 600)
+    ggsave(plotFile2, plot = p2, width = 120, height = 80, units = "mm", dpi = 600)
+    ggsave(plotFile3, plot = p3, width = 140, height = 80, units = "mm", dpi = 600)
+    ggsave(plotFile4, plot = p4, width = 140, height = 80, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(
@@ -167,7 +167,7 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\end{multicols}",  # End second two-column layout
       "",
-      "\\textbf{Marker immune signatures and pathway scores and quantified immune cell infiltrates}, integrating GSVA-derived metrics and quanTIseq estimations for a detailed immunological profile.",
+      "\\textbf{Selected signatures/pathway scores (ssGSEA)} normalized using min-max scaling with reference to TCGA values; and quantified immune cell infiltrates (quanTIseq).",
       "",
       "\\begin{multicols}{2}",  # Start first two-column layout
       "",

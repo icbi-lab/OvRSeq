@@ -203,7 +203,7 @@ plot_quantiseq_one_sample <- function(se, sample_id) {
 #' plot_immune_signature_one_sample(se, sample_id)
 #'
 #' @importFrom SummarizedExperiment colData
-#' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle scale_y_discrete
+#' @importFrom ggplot2 ggplot aes geom_bar facet_grid theme_bw ylab xlab ggtitle scale_y_discrete xlim
 #' @importFrom stringr str_wrap
 #' @export
 plot_immune_signature_one_sample <- function(se, sample_id) {
@@ -248,8 +248,8 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#175d92") +
     theme_bw()  +
-    ggtitle("Immune pathway/signature scores") +
-    ylab("") +
+    ggtitle("Normalized Immune Pathway/Signature Scores") +
+  ylab("") + xlim(c(0,1)) +
     xlab("")  + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
 
   return(p)
