@@ -83,8 +83,8 @@ OvRSeqReport <- function(se, outputDir) {
 
     ggsave(plotFile1, plot = p1, width = 148, height = 100, units = "mm", dpi = 600)
     ggsave(plotFile2, plot = p2, width = 120, height = 80, units = "mm", dpi = 600)
-    ggsave(plotFile3, plot = p3, width = 140, height = 80, units = "mm", dpi = 600)
-    ggsave(plotFile4, plot = p4, width = 140, height = 80, units = "mm", dpi = 600)
+    ggsave(plotFile3, plot = p3, width = 140, height = 90, units = "mm", dpi = 600)
+    ggsave(plotFile4, plot = p4, width = 140, height = 90, units = "mm", dpi = 600)
 
     # Prepare patient data as a LaTeX table
     patientTable <- paste(

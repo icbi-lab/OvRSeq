@@ -1,41 +1,45 @@
-#' OvaRSeqDataSet class
+#' Build SummarizedExperiment Object for OvrSeq
 #'
-#' \code{OvaRSeqDataSet} is a class inherited from
-#' \code{\link{SummarizedExperiment}}.
-#' It is used to store the count matrix, colData, and design formula
-#' in differential expression analysis.
-#' @references Martin Morgan, Valerie Obenchain, Jim Hester and
-#' Hervé Pagès (2018). SummarizedExperiment: SummarizedExperiment container.
-#' R package version 1.12.0.
-#' @export OvaRSeqDataSet
-setClass("OvaRSeqDataSet",
-         contains="SummarizedExperiment",
-         representation=representation(
-           design = "ANY"
-         )
-)
-
-#' OvaRSeq constructor
-#' @param countData a matrix or data frame contains gene count
-#' @param colData a \code{DataFrame} or \code{data.frame}
-#' @param ... optional arguments passed to \code{SummarizedExperiment}
-#' @return a OvaRSeq object
-#' @importFrom S4Vectors DataFrame
+#' This function creates a SummarizedExperiment object for OvrSeq analysis by combining count data and column metadata.
+#'
+#' @param count_data_df A data frame containing count data (log2-transformed TPM or similar).
+#' The rows should represent genes, and columns should represent samples, with row names set as gene names.
+#' @param col_data_df A data frame containing column metadata.
+#' Each row should correspond to a sample, and columns should represent sample attributes. Row names should be set as sample IDs.
+#'
+#' @return A SummarizedExperiment object with the count data and column metadata integrated.
+#'
+#' @details
+#' The function ensures that only samples present in both count data and column metadata are used to construct the SummarizedExperiment object. It checks for the presence of necessary row names in both data frames and then performs the intersection. The count data is transposed to match the format expected by the SummarizedExperiment constructor.
+#'
+#' @examples
+#' # Assuming count_data and col_data are pre-loaded data frames
+#' se <- build_OvrSeq_SE(count_data, col_data)
+#'
 #' @importFrom SummarizedExperiment SummarizedExperiment
-#'
-OvaRSeqDataSet <- function(countData, colData){
+#' @export
+OvaRSeqDataSet <- function(count_data_df, col_data_df) {
+  # Check if row names are present in count_data_df
+  if (is.null(rownames(count_data_df))) {
+    stop("Row names (gene names) are required in count data frame.")
+  }
 
-  # coerce count data to matrix
-  count_data <- as.matrix(count_data)
+  # Check if row names are present in col_data_df
+  if (is.null(rownames(col_data_df))) {
+    stop("Row names (sample IDs) are required in column data frame.")
+  }
 
-  # coerce col data to DataFrame
-  col_data <- DataFrame(col_data)
+  # Intersect gene names and sample IDs between countData and colData
+  common_samples <- intersect(rownames(col_data_df), colnames(count_data_df))
 
-  # check that count data and col data have same number of columns
-  stopifnot(ncol(count_data) == nrow(col_data))
+  # Subset the data frames to include only common genes and samples
+  count_data_sub <- count_data_df[, common_samples]
+  col_data_sub <- col_data_df[common_samples, ]
 
-  # create SummarizedExperiment object
-  se <- SummarizedExperiment(assays = list(counts = count_data), colData = col_data, ...)
-  object = new("OvaRSeqDataSet", se)
-  object
+  # Create SummarizedExperiment object
+  se <- SummarizedExperiment(assays = list(counts = as.matrix(count_data_sub)),
+                             colData = as.data.frame(col_data_sub))
+
+  # Return the SummarizedExperiment object
+  return(se)
 }

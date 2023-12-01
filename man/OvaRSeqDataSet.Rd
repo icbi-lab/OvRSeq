@@ -2,20 +2,28 @@
 % Please edit documentation in R/OvaRSeqDataSet.R
 \name{OvaRSeqDataSet}
 \alias{OvaRSeqDataSet}
-\title{OvaRSeq constructor}
+\title{Build SummarizedExperiment Object for OvrSeq}
 \usage{
-OvaRSeqDataSet(countData, colData)
+OvaRSeqDataSet(count_data_df, col_data_df)
 }
 \arguments{
-\item{countData}{a matrix or data frame contains gene count}
+\item{count_data_df}{A data frame containing count data (log2-transformed TPM or similar).
+The rows should represent genes, and columns should represent samples, with row names set as gene names.}
 
-\item{colData}{a \code{DataFrame} or \code{data.frame}}
-
-\item{...}{optional arguments passed to \code{SummarizedExperiment}}
+\item{col_data_df}{A data frame containing column metadata.
+Each row should correspond to a sample, and columns should represent sample attributes. Row names should be set as sample IDs.}
 }
 \value{
-a OvaRSeq object
+A SummarizedExperiment object with the count data and column metadata integrated.
 }
 \description{
-OvaRSeq constructor
+This function creates a SummarizedExperiment object for OvrSeq analysis by combining count data and column metadata.
+}
+\details{
+The function ensures that only samples present in both count data and column metadata are used to construct the SummarizedExperiment object. It checks for the presence of necessary row names in both data frames and then performs the intersection. The count data is transposed to match the format expected by the SummarizedExperiment constructor.
+}
+\examples{
+# Assuming count_data and col_data are pre-loaded data frames
+se <- build_OvrSeq_SE(count_data, col_data)
+
 }
