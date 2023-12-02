@@ -74,7 +74,7 @@ OvRSeqReport <- function(se, outputDir) {
     p1 <- plot_vulnerabilitymap(se[,patientID])
     p2 <- plot_ggmarginal_sample(se[,patientID],color_var = "BRCAness")
     p3 <- plot_immune_signature_one_sample(se, patientID)
-    p4 <- plot_quantiseq_one_sample(se, patientID)
+    p4 <- plot_deconvolution_data(se, patientID)
     # Create a temporary file for the plot
     plotFile1 <- tempfile(fileext = ".jpeg")
     plotFile2 <- tempfile(fileext = ".jpeg")
@@ -167,7 +167,7 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\end{multicols}",  # End second two-column layout
       "",
-      "\\textbf{Selected signatures/pathway scores (ssGSEA)} normalized using min-max scaling with reference to TCGA values; and quantified immune cell infiltrates (quanTIseq).",
+      "\\textbf{Selected signatures/pathway scores (ssGSEA)} normalized using min-max scaling with reference to TCGA values; and quantified immune cell infiltrates.",
       "",
       "\\begin{multicols}{2}",  # Start first two-column layout
       "",

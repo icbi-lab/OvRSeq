@@ -30,19 +30,29 @@
 #' Sturm, G., et al. (2019) Bioinformatics. \url{https://doi.org/10.1093/bioinformatics/btz363}
 #'
 deconvolute_immune <- function(se, method) {
-  indications <- rep('OV', times=ncol(se))
+  indications <- rep('OV', times = ncol(se))
   data <- assay(se)
+  se$Sample <- colnames(se)
+  # Check and fix duplicate row names in 'data'
+  data <- data[!duplicated(rownames(data)), ]
+
+
+  # Run the deconvolution based on the method
   if (method == "timer") {
-    res <- deconvolute(data, method=method, indications=indications)
+    res <- deconvolute(data, method = method, indications = indications)
   } else {
-    res <- deconvolute(data, method=method)
+    res <- deconvolute(data, method = method )
   }
+
+  # Post-processing and adding results to colData
   message <- paste("Deconvolute", method, "computed successfully.")
   cat(message, "\n")
-  lCell <- unlist(lapply(res$cell_type,function(x){paste0(x,"|", method)}))
+  lCell <- unlist(lapply(res$cell_type, function(x) { paste0(x, "|", method) }))
   res$cell_type <- NULL
   res <- t(res)
   colnames(res) <- lCell
   colData(se) <- cbind(colData(se), res)
+
   return(se)
 }
+

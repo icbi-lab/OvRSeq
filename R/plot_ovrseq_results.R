@@ -134,56 +134,78 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
   return(p)
 }
 
-#' Plot QuanTIseq Metrics for a Specific Sample
+#' Plot Deconvolution Data for a Given Sample
 #'
-#' This function creates a bar plot of QuanTIseq metrics for a specified sample from a `SummarizedExperiment` object. It filters and plots only those metrics that are related to QuanTIseq.
+#' Creates a bar plot representing the estimated immune cell infiltrate fractions for a specified sample
+#' using the first available deconvolution method from a provided list.
 #'
-#' @param se A `SummarizedExperiment` object containing quantiseq-related metrics in its `colData`.
-#' @param sample_id A character string specifying the ID of the sample to be plotted.
+#' @param se A `SummarizedExperiment` object containing the deconvolution data in its `colData`.
+#' @param sample_id The identifier of the sample for which the plot will be generated.
+#' @param deconvolution_methods A vector of strings representing the deconvolution methods to check
+#' in the `colData` of the `SummarizedExperiment` object. The function will use the first method that
+#' has corresponding data available.
 #'
-#' @return A `ggplot` object representing the bar plot of QuanTIseq metrics for the specified sample.
+#' @return A ggplot object representing the estimated immune cell infiltrate fractions.
 #'
 #' @details
-#' The function first checks if the specified `sample_id` is present in the `colData` of the `SummarizedExperiment` object. It then filters the data to include only those columns that contain the term "quantiseq" (case-insensitive). A bar plot is created using this filtered data, providing a visual representation of the QuanTIseq metrics for the chosen sample.
+#' The function iterates through the provided list of deconvolution methods and checks if there are
+#' any columns in the `colData` of the `SummarizedExperiment` object corresponding to these methods.
+#' It then uses the data from the first available method to create a bar plot. If no data is found
+#' for any of the provided methods, the function stops with an error.
 #'
 #' @examples
-#' # se is a pre-loaded SummarizedExperiment object
-#' sample_id <- "sample123"
-#' plot_quantiseq_one_sample(se, sample_id)
+#' # Assuming se is a pre-loaded SummarizedExperiment object and sample_id is known
+#' immunedeconv_methods <- c("quantiseq", "timer", "mcp_counter")
+#' sample_id <- "sample123"  # Replace with an actual sample ID
+#' p <- plot_deconvolution_data(se, sample_id, immunedeconv_methods)
+#' print(p)
 #'
-#' @importFrom SummarizedExperiment colData
-#' @importFrom ggplot2 ggplot aes geom_bar theme_minimal xlab ylab ggtitle scale_y_discrete
-#' @importFrom stringr str_wrap
+#' @importFrom ggplot2 ggplot aes geom_bar theme_bw ylab xlab ggtitle scale_y_discrete
 #' @export
-plot_quantiseq_one_sample <- function(se, sample_id) {
-  if (!sample_id %in% rownames(colData(se))) {
-    stop("Specified sample_id not found in SummarizedExperiment object.")
-  }
-
+plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quantiseq", "timer", "mcp_counter")) {
   # Extract data for the specified sample
   data <- colData(se)[sample_id, ]
 
-  # Filter for columns containing "quantiseq"
-  quantiseq_columns <- grepl("quantiseq", names(data), ignore.case = TRUE)
-  quantiseq_data <- data[quantiseq_columns]
+  plot_data <- NULL
+  selected_method <- NULL
 
-  # Transform 'quantiseq_data' into a format suitable for plotting
-  plot_data <- as.data.frame(t(quantiseq_data))
-  colnames(plot_data) <- c("Row","group_name", "value" )
-  plot_data$Metric <- plot_data$group_name
-  plot_data$Metric <- unlist(lapply(plot_data$Metric,
-                                    function(x) stringr::str_replace_all(x, pattern = "\\|quantiseq", replacement = "")))
-  plot_data <- plot_data[plot_data$Metric != "uncharacterized cell",]
+  # Iterate through deconvolution methods
+  for (method in deconvolution_methods) {
+    method_columns <- grepl(method, names(data), ignore.case = TRUE)
+
+    if (any(method_columns)) {
+      selected_method <- method
+      method_data <- data[method_columns]
+
+      # Transform 'method_data' into a format suitable for plotting
+      plot_data <- as.data.frame(t(method_data))
+      colnames(plot_data) <- c("Row", "group_name", "value")
+      plot_data$Metric <- unlist(lapply(plot_data$group_name,
+                                        function(x) stringr::str_replace_all(x, pattern = paste0("\\|", method), replacement = "")))
+      break
+    }
+  }
+
+  # If no method columns were found
+  if (is.null(plot_data)) {
+    stop("No deconvolution data found for the specified methods.")
+  }
+
+  # Filter out specific categories if needed
+  plot_data <- plot_data[plot_data$Metric != "uncharacterized cell", ]
+
   # Create a ggplot
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#991915") +
     theme_bw() +
     ylab("") +
     xlab("") +
-    ggtitle("Estimated immune cell infiltrate fraction") + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
+    ggtitle(paste("Estimated immune cell infiltrate fraction -", selected_method)) +
+    scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 20))
 
   return(p)
 }
+
 
 #' Plot Immune Signature Scores for a Single Sample
 #'
