@@ -94,12 +94,12 @@ OvRSeqReport <- function(se, outputDir) {
       "\\hline",  # Horizontal line
       sprintf("BRCAness status & %s (%.2f) \\\\", patientData$BRCAness, patientData$BRCAness_Prob),
       #"\\hline",  # Horizontal line
-      paste0("Infiltration status & ", patientData$InfiltrationStatus,  " \\\\"),  # Row for Infiltration Status
+      paste0("Tumor immune phenotype & ", patientData$InfiltrationStatus,  " \\\\"),  # Row for Infiltration Status
       #"\\hline",  # Horizontal line
       paste0("Molecular subtypes & ", str_remove(escapeUnderscores(patientData$Tumor_Molecular_Subtypes), "consensus"),  " \\\\"),  # Row for Tumor Molecular Subtypes
-      paste0("BRCAness immunotype & ", patientData$BRCAness_immunotype,  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("BRCAness immunetype & ", patientData$BRCAness_immunotype,  " \\\\"),  # Row for Tumor Molecular Subtypes
       sprintf("Vulnerability score & %.2f \\\\", patientData$Vulnerability_Score),
-      paste0("Immuno phenoscore & ", patientData$IPS,  " \\\\"),  # Row for Tumor Molecular Subtypes
+      paste0("Immunophenoscore & ", patientData$IPS,  " \\\\"),  # Row for Tumor Molecular Subtypes
       sprintf("CYT to C1QA ratio (C2C) & %.2f \\\\", patientData$mapped_ratio_CYT_C1QA),
       paste0("Angiogenesis Score & ", round(patientData$angiogenesis_score,0),  " \\\\"),  # Row for Tumor Molecular Subtypes
 
@@ -128,17 +128,23 @@ OvRSeqReport <- function(se, outputDir) {
     writeLines(con = rmdFile, text = c(
       "---",
       "output: pdf_document",
+      "mainfont: DejaVu Sans",
+      "font family: Arial",
       "geometry: margin = 0.5in",
       "header-includes:",
       "   - \\usepackage{multicol}",
       "   - \\usepackage{graphicx}",
+      "   - \\usepackage{helvet}",
+      "   - \\renewcommand{\\familydefault}{\\sfdefault}",
       "---",
       "",
-      paste0("## OvRSeq Analysis Report for ", patientID),
+      " \\begin{center}",
+      paste0("\\textbf{OvRSeq Analysis Report for ", patientID,"}"),
       "",
       as.character(Sys.Date()),
       "\\vspace{2mm}",
       "",
+      "\\end{center}",
       "The vulnerability map indicate based on BRCAness probability and CYT to C1QA ratio (C2C) indications with a high vulnerability (score) for response to combination immunotherapy with PARPi and immune checkpoint inhibitors.",
       "",
       "\\begin{multicols}{2}",  # Start first two-column layout
@@ -155,7 +161,7 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\end{multicols}",  # End first two-column layout
       "",
-      "\\textbf{Molecular markers and TCGA-OV Reference Values}. Marker gene expression levels and respective Q1 and Q3 levels (interquartile range) from the TCGA cohort.",
+      "Marker gene expression and reference values from TCGA-OV [median (Q1-Q3)].",
       "",
       "\\begin{multicols}{2}",  # Start second two-column layout
       "",
@@ -167,7 +173,8 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       "\\end{multicols}",  # End second two-column layout
       "",
-      "\\textbf{Selected signatures/pathway scores (ssGSEA)} normalized using min-max scaling with reference to TCGA values; and quantified immune cell infiltrates.",
+      "\\vspace{0mm}",
+      "Enrichment of gene signatures or pathways (ssGSEA) and estimated immune cell fraction (quanTIseq)",
       "",
       "\\begin{multicols}{2}",  # Start first two-column layout
       "",
@@ -177,8 +184,9 @@ OvRSeqReport <- function(se, outputDir) {
       "",
       paste0("\\includegraphics{", gsub("\n", "", plotFile4), "}"),  # Include the first plot with newline removed
       "",
-      "\\end{multicols}"  # End first two-column layout
-    ))
+      "\\end{multicols}",  # End first two-column layout
+      "*Enrichment score is standardized to min-max values from TCGA-OV reference."
+      ))
 
     # Render the Rmd file to PDF
     outputFilePath <- file.path(outputDir, paste0("OvRSeqReport_", patientID, ".pdf"))

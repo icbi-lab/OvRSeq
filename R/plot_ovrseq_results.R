@@ -123,7 +123,10 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
   # Add theme and marginal histograms
   p <- p + theme_bw()
   p <- p + theme(legend.position = "bottom") +
-    guides(color=guide_legend(nrow=1, byrow=TRUE))
+    guides(color=guide_legend(nrow=1, byrow=TRUE)) +
+    theme(legend.box.spacing = unit(0, "pt")) +
+    theme(plot.margin = unit(c(0, 0, 0, 0), "mm"))
+
   p <- ggMarginal(p, type = "histogram", groupColour = TRUE, groupFill = TRUE)
 
   for (obj in c("TCGA_OV")) {
@@ -200,8 +203,8 @@ plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quan
     geom_bar(stat = "identity", color = "black", fill ="#991915") +
     theme_bw() +
     ylab("") +
-    xlab("") +
-    ggtitle(str_wrap(paste("Estimated immune cell infiltrate fraction -", selected_method),35)) +
+    xlab("Cell fraction") +
+    ggtitle("") +
     scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 20))
 
   return(p)
@@ -277,9 +280,9 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#175d92") +
     theme_bw()  +
-    ggtitle(str_wrap("Normalized Immune Pathway/Signature Scores"), 35) +
+    ggtitle("") +
   ylab("") + xlim(c(0,1)) +
-    xlab("")  + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
+    xlab("Enrichment score*")  + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
 
   return(p)
 }
