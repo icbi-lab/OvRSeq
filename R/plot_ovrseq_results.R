@@ -161,6 +161,7 @@ plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var
 #' print(p)
 #'
 #' @importFrom ggplot2 ggplot aes geom_bar theme_bw ylab xlab ggtitle scale_y_discrete
+#' @importFrom stringr str_wrap
 #' @export
 plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quantiseq", "timer", "mcp_counter")) {
   # Extract data for the specified sample
@@ -200,7 +201,7 @@ plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quan
     theme_bw() +
     ylab("") +
     xlab("") +
-    ggtitle(paste("Estimated immune cell infiltrate fraction -", selected_method)) +
+    ggtitle(str_wrap(paste("Estimated immune cell infiltrate fraction -", selected_method),35)) +
     scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 20))
 
   return(p)
@@ -252,7 +253,13 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
     minVal <- tcgaStats[tcgaStats$Feature == col, "Min"]
     maxVal <- tcgaStats[tcgaStats$Feature == col, "Max"]
 
-    (data[[col]] - minVal) / (maxVal - minVal)
+    new_value <- (data[[col]] - minVal) / (maxVal - minVal)
+    if(new_value < 0){
+      new_value <- 0
+    } else if (new_value > 1){
+      new_value <- 1
+    }
+    return(new_value)
   }))
 
   # Set the row names to match the original data
@@ -270,7 +277,7 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   p <- ggplot(plot_data, aes(x = value, y = Metric)) +
     geom_bar(stat = "identity", color = "black", fill ="#175d92") +
     theme_bw()  +
-    ggtitle("Normalized Immune Pathway/Signature Scores") +
+    ggtitle(str_wrap("Normalized Immune Pathway/Signature Scores"), 35) +
   ylab("") + xlim(c(0,1)) +
     xlab("")  + scale_y_discrete(labels = function(x) str_wrap(x, width = 20))
 
