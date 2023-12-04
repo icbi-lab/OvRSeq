@@ -128,8 +128,6 @@ OvRSeqReport <- function(se, outputDir) {
     writeLines(con = rmdFile, text = c(
       "---",
       "output: pdf_document",
-      "mainfont: DejaVu Sans",
-      "font family: Arial",
       "geometry: margin = 0.5in",
       "header-includes:",
       "   - \\usepackage{multicol}",
