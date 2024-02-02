@@ -12,6 +12,7 @@
 #'         molecular subtype classification, immune phenotyping, IPS scoring, immune signatures,
 #'         and immune cell deconvolution estimates.
 #' @importFrom SummarizedExperiment assay colData
+#' @importFrom limma voom
 #' @examples
 #' # Load data
 #' se <- load_TCGA_OV()
@@ -29,6 +30,19 @@ OvRSeq <- function(se, normalize = FALSE){
   assayData <- assay(se)
   dataType <- if (is.integer(assayData)) "raw counts" else "normalized"
   warning(sprintf("Data in 'se' appears to be %s.", dataType))
+
+  if (normalize) {
+
+      # Perform voom normalization
+      voomData <- voom(assayData)
+
+      # Replace assayData with voom-normalized data
+      assays(se) <- voomData
+
+      # Update the dataType warning
+      dataType <- "normalized (voom)"
+      warning(sprintf("Data has been normalized using 'voom'. It is now %s. The optimal analysis may involve log2 TPM.", dataType))
+  }
 
   if (is.numeric(assayData) && !normalize) {
     warning("Normalization is set to FALSE but data seems to be numeric. Ensure this is intentional.")

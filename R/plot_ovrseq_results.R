@@ -90,6 +90,7 @@ plot_ggmarginal <- function(se, x_var, y_var, color_var = NA) {
 #' @importFrom SummarizedExperiment colData assay
 #' @importFrom ggplot2 ggplot aes aes_string geom_point theme theme_bw guides guide_legend scale_y_discrete
 #' @importFrom ggExtra ggMarginal
+#' @import grid
 #' @export
 plot_ggmarginal_sample <- function(se, x_var = "C1QA", y_var = "CD8A", color_var = "BRCAness") {
   # Load TCGA_OV dataset (modify this as per your actual data loading method)
@@ -248,8 +249,22 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
 
   nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
                   "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
-  data <- data[sign_columns]
-  tcgaStats <- tcgaStats[sign_columns,]
+  # Create a named vector for mapping
+  column_mapping <- setNames(sign_columns, nice_name)
+
+  # Find the common columns between your dataset and the predefined list
+  common_columns <- intersect(names(data), sign_columns)
+
+  # Check if there are any common columns
+  if (length(common_columns) == 0) {
+    return(NA)
+  }
+
+  # Subset and rename the data using the common columns and mapping
+  data <- data[common_columns]
+  names(data) <- column_mapping[names(data)]
+
+  tcgaStats <- tcgaStats[common_columns,]
   #colnames(data) <- nice_name
   # Perform min-max normalization using lapply
   normalizedData <- as.data.frame(lapply(names(data), function(col) {

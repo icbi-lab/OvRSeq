@@ -1,6 +1,6 @@
 Package: OvRSeq
 Title: Ovarian Cancer RNA-Seq Analysis Package
-Version: 1.3
+Version: 1.4
 Authors@R: c(
     person("Monfort-Lanzas", "Pablo", 
         email = "pablo.monfort@i-med.ac.at", role = c("aut", "cre")),
@@ -29,7 +29,8 @@ Imports:
     dplyr,
     knitr, 
     reshape2, 
-    rlang
+    rlang,
+    limma
 Suggests:
     knitr,
     rmarkdown,
