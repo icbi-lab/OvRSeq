@@ -250,7 +250,17 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
   nice_name <- c("IFNG", "Inflamed", "BRCAness+","BRCAness-","T cell exhaustion",
                   "T cell exclusion", "Interferon alpha response","Immunological Constant of Rejection")
   # Create a named vector for mapping
-  column_mapping <- setNames(sign_columns, nice_name)
+  column_mapping <- list(
+    "IFNG_Ayers" = "IFNG",
+    "Inflamed" = "Inflamed",
+    "BRCAness_pos" = "BRCAness+",
+    "BRCAness_neg" = "BRCAness-",
+    "T-cell exhaustion" = "T cell exhaustion",
+    "T-cell exclusion" = "T cell exclusion",
+    "Interferon alpha response" = "Interferon alpha response",
+    "Immunological Constant of Rejection (ICR)" = "Immunological Constant of Rejection"
+  )
+
 
   # Find the common columns between your dataset and the predefined list
   common_columns <- intersect(names(data), sign_columns)
@@ -262,7 +272,7 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
 
   # Subset and rename the data using the common columns and mapping
   data <- data[common_columns]
-  names(data) <- column_mapping[names(data)]
+
 
   tcgaStats <- tcgaStats[common_columns,]
   #colnames(data) <- nice_name
@@ -279,6 +289,8 @@ plot_immune_signature_one_sample <- function(se, sample_id) {
     }
     return(new_value)
   }))
+
+  names(data) <- as.vector(unlist(column_mapping[names(data)]))
 
   # Set the row names to match the original data
   colnames(normalizedData) <- colnames(data)
