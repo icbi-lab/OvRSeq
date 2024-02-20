@@ -171,12 +171,12 @@ plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quan
   # Extract data for the specified sample
   data <- colData(se)[sample_id, ]
 
-  plot_data <- NULL
+  # plot_data <- NULL
   selected_method <- NULL
 
   # Iterate through deconvolution methods
   for (method in deconvolution_methods) {
-    method_columns <- grepl(method, names(data), ignore.case = TRUE)
+    method_columns <- grepl(method, names(data), ignore.case = F)
 
     if (any(method_columns)) {
       selected_method <- method
@@ -187,6 +187,9 @@ plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quan
       colnames(plot_data) <- c("Row", "group_name", "value")
       plot_data$Metric <- unlist(lapply(plot_data$group_name,
                                         function(x) stringr::str_replace_all(x, pattern = paste0("\\|", method), replacement = "")))
+      plot_data$Metric <- unlist(lapply(plot_data$group_name,
+                                        function(x) stringr::str_replace_all(x, pattern = paste0("(?i)", method,"\\|"), replacement = "")))
+
       break
     }
   }
