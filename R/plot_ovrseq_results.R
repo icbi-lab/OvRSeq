@@ -187,7 +187,7 @@ plot_deconvolution_data <- function(se, sample_id, deconvolution_methods=c("quan
       colnames(plot_data) <- c("Row", "group_name", "value")
       plot_data$Metric <- unlist(lapply(plot_data$group_name,
                                         function(x) stringr::str_replace_all(x, pattern = paste0("\\|", method), replacement = "")))
-      plot_data$Metric <- unlist(lapply(plot_data$group_name,
+      plot_data$Metric <- unlist(lapply(plot_data$Metric,
                                         function(x) stringr::str_replace_all(x, pattern = paste0("(?i)", method,"\\|"), replacement = "")))
 
       break
