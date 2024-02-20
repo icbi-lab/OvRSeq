@@ -76,7 +76,7 @@ OvRSeqReport <- function(se, outputDir) {
     p3 <- plot_immune_signature_one_sample(se, patientID)
     p4 <- plot_deconvolution_data(se, patientID)
     # Create a temporary file for the plot
-    plotFile1 <- tempfile(fileext = ".jpeg")
+    plotFile1 <- tempfile(fileext = ".png")
     plotFile2 <- tempfile(fileext = ".jpeg")
     plotFile3 <- tempfile(fileext = ".jpeg")
     plotFile4 <- tempfile(fileext = ".jpeg")
